@@ -5,9 +5,9 @@ import kotlinx.serialization.Serializable
 
 sealed class NavRoutes: NavKey {
     @Serializable
-    data object OnBoarding: NavRoutes()
+    data object OnBoardingNav: NavRoutes()
     @Serializable
-    data class Home(val id:String): NavRoutes()
+    data object HomeNav: NavRoutes()
     @Serializable
     data object ErrorNav: NavRoutes()
 }
