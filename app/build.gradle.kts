@@ -48,6 +48,8 @@ dependencies {
     //Added Dependency's
     implementation(libs.coil.compose)
 
+    implementation(libs.androidx.datastore)
+
     implementation(libs.kotlinx.serialization.core)
 
     implementation(platform(libs.koin.bom))

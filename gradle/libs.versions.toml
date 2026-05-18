@@ -2,6 +2,7 @@
 agp = "9.1.1"
 coreKtx = "1.18.0"
 junit = "4.13.2"
+datastore-version = "1.2.1"
 junitVersion = "1.1.5"
 kotlinx-coroutines = "1.11.0"
 retrofit-version = "3.0.0"
@@ -27,6 +28,8 @@ coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil-v
 
 kotlinx-serialization-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-core", version.ref = "kotlinx-ser-core-version" }
 
+androidx-datastore = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore-version" }
+
 kotlinx-coroutines = { group = "org.jetbrains.kotlinx", name="kotlinx-coroutines-android", version.ref = "kotlinx-coroutines" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-appcompat = { group = "androidx.appcompat", name="appcompat", version.ref = "appcompat-version" }
@@ -39,7 +42,7 @@ navigation3-ui = { group = "androidx.navigation3", name="navigation3-ui", versio
 koin-bom = { group = "io.insert-koin", name = "koin-bom", version.ref = "koin-bom" }
 koin-core = { group = "io.insert-koin", name = "koin-core" }
 koin-android = { group = "io.insert-koin", name = "koin-android" }
-koin-compose = { group = "io.insert-koin", name = "koin-compose" }
+koin-compose = { group = "io.insert-koin", name = "koin-androidx-compose" }
 
 navigation-animation = { group = "com.google.accompanist", name="accompanist-navigation-animation", version.ref = "nav-animation" }
 retrofit-gson = { group = "com.squareup.retrofit2", name="converter-gson", version.ref = "retrofit-version" }

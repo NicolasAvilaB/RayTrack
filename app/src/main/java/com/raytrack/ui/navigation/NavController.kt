@@ -6,36 +6,55 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.produceState
 import androidx.compose.ui.Modifier
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
+import com.raytrack.presentation.onboarding.OnBoardingViewModel
 import com.raytrack.ui.navigation.NavRoutes.ErrorNav
-import com.raytrack.ui.navigation.NavRoutes.Home
-import com.raytrack.ui.navigation.NavRoutes.OnBoarding
-import com.raytrack.ui.screens.HomeScreen
-import com.raytrack.ui.screens.OnBoardingScreen
+import com.raytrack.ui.navigation.NavRoutes.OnBoardingNav
+import com.raytrack.ui.navigation.extensions.AppStartResolve
+import com.raytrack.ui.navigation.extensions.back
+import com.raytrack.ui.navigation.extensions.navigateAfterOnBoarding
+import com.raytrack.ui.navigation.extensions.navigateTo
+import com.raytrack.ui.screens.homescreen.HomeScreen
+import com.raytrack.ui.screens.onboardingscreen.OnBoardingScreen
+import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @Composable
 internal fun NavController(
-    modifier: Modifier
+    modifier: Modifier,
+    viewModel: AppStartResolve = koinViewModel()
 ) {
-    val backStack = rememberNavBackStack(OnBoarding)
+    val startDestination = produceState<NavRoutes?>(null) {
+        value = viewModel.resolve()
+    }.value
+
+    if (startDestination == null) return
+
+    val backStack = rememberNavBackStack(startDestination)
 
     NavDisplay(
         backStack = backStack,
         onBack = { backStack.back() },
         entryProvider = entryProvider {
-            entry<OnBoarding> {
+            entry<OnBoardingNav> {
+
+                val viewModel: OnBoardingViewModel = koinViewModel() {
+                    parametersOf()
+                }
+
                 OnBoardingScreen(
                     navToHome = {
-                        backStack.navigateTo(Home(it))
-                    }
+                        backStack.navigateAfterOnBoarding(NavRoutes.HomeNav)
+                    },
+                    viewModel = viewModel,
                 )
             }
-            entry<Home> { key ->
+            entry<NavRoutes.HomeNav> { key ->
                 HomeScreen(
-                    returnId = key.id,
                     navToBack = {
                         backStack.back()
                     }
