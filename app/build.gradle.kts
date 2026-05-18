@@ -49,6 +49,8 @@ dependencies {
     implementation(libs.coil.compose)
 
     implementation(libs.androidx.datastore)
+    implementation(libs.androidx.foundation)
+    implementation(libs.lottie.compose)
 
     implementation(libs.kotlinx.serialization.core)
 
@@ -68,6 +70,7 @@ dependencies {
     implementation(libs.kotlin.test)
     implementation(libs.io.mockk)
 
+    // Dependency's Stock
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.graphics)
