@@ -251,17 +251,22 @@ fun HomeScreen(
 
                 Button(
                     onClick = { onSearch(query.value) },
-                    shape = RoundedCornerShape(50),
+                    shape = RoundedCornerShape(35),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(60.dp),
+                        .padding(
+                            start = 20.dp,
+                            end = 20.dp
+                        )
+                        .height(53.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color.Transparent
                     ),
                     border = BorderStroke(1.dp, Color(0xFF00FFC3))
                 ) {
                     Text(
-                        "NUEVO DESTINO",
+                        text = "NUEVO DESTINO",
+                        fontSize = 16.sp,
                         color = Color(0xFF7CF7D4)
                     )
                 }
