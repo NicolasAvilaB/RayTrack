@@ -5,6 +5,8 @@ junit = "4.13.2"
 datastore-version = "1.2.1"
 junitVersion = "1.1.5"
 kotlinx-coroutines = "1.11.0"
+androidx-foundation-version = "1.11.1"
+lottie-compose-version = "6.7.1"
 retrofit-version = "3.0.0"
 nav-compose-version = "1.1.1"
 coil-version = "3.4.0"
@@ -29,6 +31,8 @@ coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil-v
 kotlinx-serialization-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-core", version.ref = "kotlinx-ser-core-version" }
 
 androidx-datastore = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore-version" }
+androidx-foundation = { group = "androidx.compose.foundation", name="foundation", version.ref = "androidx-foundation-version" }
+lottie-compose = { group = "com.airbnb.android", name="lottie-compose", version.ref = "lottie-compose-version" }
 
 kotlinx-coroutines = { group = "org.jetbrains.kotlinx", name="kotlinx-coroutines-android", version.ref = "kotlinx-coroutines" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }

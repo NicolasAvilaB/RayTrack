@@ -25,7 +25,6 @@ import org.koin.core.parameter.parametersOf
 
 @Composable
 internal fun NavController(
-    modifier: Modifier,
     viewModel: AppStartResolve = koinViewModel()
 ) {
     val startDestination = produceState<NavRoutes?>(null) {
@@ -64,7 +63,6 @@ internal fun NavController(
                 Text("Error")
             }
         },
-        modifier = modifier,
         transitionSpec = {
             slideInHorizontally(
                 initialOffsetX = { it },

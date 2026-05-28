@@ -2,14 +2,14 @@ package com.raytrack.data.remote.onboarding
 
 import kotlinx.coroutines.flow.Flow
 
-internal class OnBoardingRepository(
-    private val cacheSource: OnBoardingCacheDataSource
+internal class OnBoardingUseCase(
+    private val sources: OnBoardingCacheDataSource
 ) {
     fun isOnBoardingViewed(): Flow<Boolean> {
-        return cacheSource.isOnBoardingViewed()
+        return sources.isOnBoardingViewed()
     }
 
     suspend fun completeOnBoarding() {
-        cacheSource.storeOnBoardingView()
+        sources.storeOnBoardingView()
     }
 }
