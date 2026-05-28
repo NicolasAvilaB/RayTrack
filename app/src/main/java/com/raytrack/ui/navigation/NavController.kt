@@ -54,8 +54,11 @@ internal fun NavController(
             }
             entry<NavRoutes.HomeNav> { key ->
                 HomeScreen(
-                    navToBack = {
-                        backStack.back()
+                    onSearch = {
+
+                    },
+                    onSelectRoute = {
+
                     }
                 )
             }

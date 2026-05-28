@@ -55,6 +55,7 @@ dependencies {
     implementation(libs.kotlinx.serialization.core)
 
     implementation(platform(libs.koin.bom))
+    implementation(libs.androidx.compose.material.icons)
     implementation(libs.koin.core)
     implementation(libs.koin.android)
     implementation(libs.koin.compose)
