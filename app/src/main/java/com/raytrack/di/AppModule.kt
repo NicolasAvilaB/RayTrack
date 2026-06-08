@@ -7,6 +7,7 @@ import com.raytrack.data.cache.dataStore
 import com.raytrack.data.remote.onboarding.OnBoardingCacheDataSource
 import com.raytrack.data.remote.onboarding.OnBoardingCacheImpl
 import com.raytrack.data.remote.onboarding.OnBoardingUseCase
+import com.raytrack.presentation.home.HomeViewModel
 import com.raytrack.presentation.onboarding.OnBoardingViewModel
 import com.raytrack.ui.navigation.extensions.AppStartResolve
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -39,5 +40,9 @@ fun AppModule() = module {
 
     viewModel {
         OnBoardingViewModel(get())
+    }
+
+    viewModel {
+        HomeViewModel()
     }
 }

@@ -9,6 +9,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import com.raytrack.ui.navigation.NavController
 import com.raytrack.ui.theme.RayTrackTheme
 
@@ -19,6 +22,25 @@ class MainActivity : ComponentActivity() {
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
         enableEdgeToEdge()
+
+        WindowCompat.setDecorFitsSystemWindows(
+            window,
+            false
+        )
+
+        WindowInsetsControllerCompat(
+            window,
+            window.decorView
+        ).let { controller ->
+
+            controller.hide(
+                WindowInsetsCompat.Type.systemBars()
+            )
+
+            controller.systemBarsBehavior =
+                WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        }
+
         setContent {
             RayTrackTheme {
                 NavController()

@@ -9,46 +9,62 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import com.raytrack.ui.theme.RayTracColors
 
 @Composable
 fun FuturisticBackground() {
+
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF050B10))
+            .background(RayTracColors.Background)
     ) {
 
-        // Grid energético sutil
+        // Glow superior
+        Box(
+            modifier = Modifier
+                .size(800.dp)
+                .align(Alignment.TopCenter)
+                .background(
+                    Brush.radialGradient(
+                        colors = listOf(
+                            RayTracColors.PrimaryGlow.copy(alpha = 0.10f),
+                            androidx.compose.ui.graphics.Color.Transparent
+                        )
+                    ),
+                    shape = CircleShape
+                )
+        )
+
+        // Glow central muy tenue
+        Box(
+            modifier = Modifier
+                .size(500.dp)
+                .align(Alignment.Center)
+                .background(
+                    Brush.radialGradient(
+                        colors = listOf(
+                            RayTracColors.PrimaryGlow.copy(alpha = 0.03f),
+                            androidx.compose.ui.graphics.Color.Transparent
+                        )
+                    ),
+                    shape = CircleShape
+                )
+        )
+
+        // Vignette inferior
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(
-                    Brush.radialGradient(
-                        colors = listOf(
-                            Color(0xFF00FFC3).copy(alpha = 0.08f),
-                            Color.Transparent
-                        ),
-                        radius = 1200f
-                    )
-                )
-        )
-
-        // “núcleo del sistema”
-        Box(
-            modifier = Modifier
-                .align(Alignment.Center)
-                .size(400.dp)
-                .background(
-                    Brush.radialGradient(
-                        colors = listOf(
-                            Color(0xFF00FFC3).copy(alpha = 0.10f),
-                            Color.Transparent
+                    Brush.verticalGradient(
+                        listOf(
+                            androidx.compose.ui.graphics.Color.Transparent,
+                            RayTracColors.Background.copy(alpha = 0.35f),
+                            RayTracColors.Background
                         )
-                    ),
-                    shape = CircleShape
+                    )
                 )
         )
     }
