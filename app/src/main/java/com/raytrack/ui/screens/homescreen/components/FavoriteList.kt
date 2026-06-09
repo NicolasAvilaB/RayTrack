@@ -1,21 +1,17 @@
 package com.raytrack.ui.screens.homescreen.components
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Landscape
-import androidx.compose.material.icons.filled.Work
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.raytrack.presentation.home.HomeViewModel
-import com.raytrack.ui.screens.homescreen.HomeScreen
 import com.raytrack.ui.screens.homescreen.model.DestinationItem
 import com.raytrack.ui.theme.RayTracColors
 
@@ -34,7 +30,8 @@ fun FavoriteList(
                 top = 20.dp,
                 bottom = 8.dp
             ),
-            title = "FAVORITOS"
+            icon = Icons.Default.Star,
+            title = "FAVORITOS",
         )
 
         visibleFavorites.forEach {

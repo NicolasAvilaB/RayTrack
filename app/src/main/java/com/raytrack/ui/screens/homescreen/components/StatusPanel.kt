@@ -49,7 +49,7 @@ fun StatusPanel(
                 .background(
                     brush = Brush.verticalGradient(
                         colors = listOf(
-                            Color(0xFF071521).copy(alpha = 0.75f),
+                            Color(0xFF071521).copy(alpha = 0.5f),
                             Color(0xFF000000).copy(alpha = 0.30f),                        )
                     )
                 )

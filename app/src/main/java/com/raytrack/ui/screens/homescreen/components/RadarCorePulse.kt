@@ -35,7 +35,7 @@ internal fun RadarCorePulse() {
 
     Box(
         modifier = Modifier
-            .padding(top = 100.dp)
+            .padding(top = 90.dp)
             .size(36.dp)
             .graphicsLayer {
                 scaleX = scale

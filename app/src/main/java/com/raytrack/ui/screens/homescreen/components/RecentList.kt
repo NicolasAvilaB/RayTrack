@@ -1,13 +1,11 @@
 package com.raytrack.ui.screens.homescreen.components
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Apartment
 import androidx.compose.material.icons.filled.BeachAccess
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Landscape
+import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Park
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,7 +31,8 @@ fun RecentList(
             modifier = Modifier.padding(
                 bottom = 8.dp
             ),
-            title = "RECIENTES"
+            icon = Icons.Default.History,
+            title = "RECIENTES",
         )
 
         visibleFavorites.forEach {
@@ -44,7 +43,6 @@ fun RecentList(
                 onSelectRoute(it.title)
             }
         }
-
         if (hiddenCount > 0) {
 
             Text(

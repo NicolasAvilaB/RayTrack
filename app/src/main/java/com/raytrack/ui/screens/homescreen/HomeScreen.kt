@@ -45,22 +45,6 @@ internal fun HomeScreen(
         BatteryUtils.getBatteryLevel(context)
     }
 
-    val query = remember { mutableStateOf("") }
-
-    val filter = remember { mutableStateOf(SearchFilter.FAVORITES) }
-
-    val filteredFavorites =
-        if (filter.value == SearchFilter.FAVORITES)
-            viewModel.searchFavorites(query.value)
-        else
-            viewModel.favorites
-
-    val filteredRecents =
-        if (filter.value == SearchFilter.RECENTS)
-            viewModel.searchRecents(query.value)
-        else
-            viewModel.recents
-
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -86,23 +70,23 @@ internal fun HomeScreen(
             RayTracHeader()
 
             RayTracSearchBar(
-                query = query.value,
-                filter = filter.value,
+                query = viewModel.query.value,
+                filter = viewModel.filter.value,
                 onFilterChange = {
-                    filter.value = it
+                    viewModel.filter.value = it
                 },
                 onQueryChange = {
-                    query.value = it
+                    viewModel.query.value = it
                 }
             )
 
             FavoriteList(
-                favorites = filteredFavorites,
+                favorites = viewModel.filteredFavorites(),
                 onSelectRoute = onSelectRoute
             )
 
             RecentList(
-                recents = filteredRecents,
+                recents = viewModel.filteredRecents(),
                 onSelectRoute = onSelectRoute
             )
 
@@ -122,7 +106,7 @@ internal fun HomeScreen(
                     bottom = 10.dp
                 )
             ) {
-                onSearch(query.value)
+                onSearch(viewModel.query.value)
             }
 
             StatusPanel(

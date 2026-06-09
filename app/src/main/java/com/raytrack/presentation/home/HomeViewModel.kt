@@ -6,10 +6,15 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Landscape
 import androidx.compose.material.icons.filled.Park
 import androidx.compose.material.icons.filled.Work
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.raytrack.ui.screens.homescreen.model.DestinationItem
+import com.raytrack.ui.screens.homescreen.model.SearchFilter
 
 internal class HomeViewModel() : ViewModel() {
+
+    val query = mutableStateOf("")
+    val filter = mutableStateOf(SearchFilter.FAVORITES)
 
     val favorites = listOf(
         DestinationItem(
@@ -56,6 +61,18 @@ internal class HomeViewModel() : ViewModel() {
             Icons.Default.Apartment
         )
     )
+
+    fun filteredFavorites(): List<DestinationItem> =
+        if (filter.value == SearchFilter.FAVORITES)
+            searchFavorites(query.value)
+        else
+            favorites
+
+    fun filteredRecents(): List<DestinationItem> =
+        if (filter.value == SearchFilter.RECENTS)
+            searchRecents(query.value)
+        else
+            recents
 
     fun searchFavorites(
         query: String
