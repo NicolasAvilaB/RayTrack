@@ -1,7 +1,9 @@
 package com.raytrack.ui.screens.homescreen.components
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -18,6 +20,8 @@ import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -39,43 +43,56 @@ fun StatusPanel(
             RayTracColors.Border
         )
     ) {
-
-        Row(
+        Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 10.dp),
-            horizontalArrangement = Arrangement.SpaceEvenly,
+                .clip(RoundedCornerShape(18.dp))
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            Color(0xFF071521).copy(alpha = 0.75f),
+                            Color(0xFF000000).copy(alpha = 0.30f),                        )
+                    )
+                )
         ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        horizontal = 12.dp,
+                        vertical = 12.dp
+                    ),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
 
-            StatusItem(
-                icon = Icons.Outlined.LocationOn,
-                "GPS",
-                "ACTIVO"
-            )
+                StatusItem(
+                    icon = Icons.Outlined.LocationOn,
+                    title = "GPS",
+                    value = "ACTIVO"
+                )
 
-            VerticalDivider(
-                modifier = Modifier.height(32.dp),
-                color = Color(0xFF00D1FF).copy(alpha = 0.15f),
-                thickness = 1.dp
-            )
+                VerticalDivider(
+                    modifier = Modifier.height(40.dp),
+                    color = RayTracColors.PrimaryGlow.copy(alpha = 0.18f),
+                    thickness = 1.dp
+                )
 
-            StatusItem(
-                icon = Icons.Outlined.ViewInAr,
-                "AR",
-                "LISTO"
-            )
+                StatusItem(
+                    icon = Icons.Outlined.ViewInAr,
+                    title = "AR",
+                    value = "LISTO"
+                )
 
-            VerticalDivider(
-                modifier = Modifier.height(32.dp),
-                color = Color(0xFF00D1FF).copy(alpha = 0.15f),
-                thickness = 1.dp
-            )
+                VerticalDivider(
+                    modifier = Modifier.height(40.dp),
+                    color = RayTracColors.PrimaryGlow.copy(alpha = 0.18f),
+                    thickness = 1.dp
+                )
 
-            StatusItem(
-                icon = Icons.Outlined.Battery6Bar,
-                "BATERÍA",
-                "$batteryLevel%"
-            )
+                BatteryStatusItem(
+                    batteryLevel = batteryLevel
+                )
+            }
         }
     }
 }

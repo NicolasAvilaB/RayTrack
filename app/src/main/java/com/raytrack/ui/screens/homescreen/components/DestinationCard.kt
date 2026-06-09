@@ -36,12 +36,13 @@ import com.raytrack.ui.theme.RayTracColors
 
 @Composable
 fun DestinationCard(
+    modifier: Modifier = Modifier,
     destination: DestinationItem,
     onClick: () -> Unit
 ) {
 
     Card(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(18.dp),
@@ -133,6 +134,7 @@ fun DestinationCardPreview(){
     ) {
         favorites.forEach {
             DestinationCard(
+
                 destination = it,
                 onClick = { }
             )

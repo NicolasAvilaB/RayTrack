@@ -18,6 +18,21 @@ internal class HomeViewModel() : ViewModel() {
             Icons.Default.Home
         ),
         DestinationItem(
+            "Casa Mi Polola",
+            "Los Leones 123",
+            Icons.Default.Home
+        ),
+        DestinationItem(
+            "Casa Vecino",
+            "Los Leones 123",
+            Icons.Default.Home
+        ),
+        DestinationItem(
+            "Casa Perro",
+            "Los Leones 123",
+            Icons.Default.Home
+        ),
+        DestinationItem(
             "Oficina",
             "Apoquindo 4501",
             Icons.Default.Work
@@ -42,25 +57,43 @@ internal class HomeViewModel() : ViewModel() {
         )
     )
 
-    fun searchDestinations(
+    fun searchFavorites(
         query: String
     ): List<DestinationItem> {
 
-        return (favorites + recents)
-            .distinctBy { it.title }
-            .filter {
+        return favorites.filter {
 
-                query.isBlank() ||
+            query.isBlank() ||
 
-                        it.title.contains(
-                            query,
-                            ignoreCase = true
-                        ) ||
+                    it.title.contains(
+                        query,
+                        ignoreCase = true
+                    ) ||
 
-                        it.subtitle.contains(
-                            query,
-                            ignoreCase = true
-                        )
-            }
+                    it.subtitle.contains(
+                        query,
+                        ignoreCase = true
+                    )
+        }
+    }
+
+    fun searchRecents(
+        query: String
+    ): List<DestinationItem> {
+
+        return recents.filter {
+
+            query.isBlank() ||
+
+                    it.title.contains(
+                        query,
+                        ignoreCase = true
+                    ) ||
+
+                    it.subtitle.contains(
+                        query,
+                        ignoreCase = true
+                    )
+        }
     }
 }

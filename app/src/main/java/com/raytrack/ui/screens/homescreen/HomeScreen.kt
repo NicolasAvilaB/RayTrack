@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -28,6 +29,7 @@ import com.raytrack.ui.screens.homescreen.components.RecentList
 import com.raytrack.ui.screens.homescreen.components.SectionHeader
 import com.raytrack.ui.screens.homescreen.components.StatusPanel
 import com.raytrack.ui.screens.homescreen.model.BatteryUtils
+import com.raytrack.ui.screens.homescreen.model.SearchFilter
 import com.raytrack.ui.theme.RayTracColors
 
 @Composable
@@ -45,9 +47,19 @@ internal fun HomeScreen(
 
     val query = remember { mutableStateOf("") }
 
-    val results = viewModel.searchDestinations(
-        query.value
-    )
+    val filter = remember { mutableStateOf(SearchFilter.FAVORITES) }
+
+    val filteredFavorites =
+        if (filter.value == SearchFilter.FAVORITES)
+            viewModel.searchFavorites(query.value)
+        else
+            viewModel.favorites
+
+    val filteredRecents =
+        if (filter.value == SearchFilter.RECENTS)
+            viewModel.searchRecents(query.value)
+        else
+            viewModel.recents
 
     Box(
         modifier = Modifier
@@ -60,7 +72,8 @@ internal fun HomeScreen(
         RayTracRadar(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(400.dp)
+                .height(320.dp)
+                .offset(y = (-100).dp)
                 .align(Alignment.BottomCenter)
         )
 
@@ -74,22 +87,22 @@ internal fun HomeScreen(
 
             RayTracSearchBar(
                 query = query.value,
+                filter = filter.value,
+                onFilterChange = {
+                    filter.value = it
+                },
                 onQueryChange = {
                     query.value = it
                 }
             )
 
-            SectionHeader("FAVORITOS")
-
             FavoriteList(
-                favorites = viewModel.favorites,
+                favorites = filteredFavorites,
                 onSelectRoute = onSelectRoute
             )
 
-            SectionHeader("RECIENTES")
-
             RecentList(
-                recents = viewModel.recents,
+                recents = filteredRecents,
                 onSelectRoute = onSelectRoute
             )
 
@@ -102,7 +115,13 @@ internal fun HomeScreen(
                     .align(Alignment.BottomCenter),
                 verticalArrangement = Arrangement.spacedBy(5.dp)
         ) {
-            NewDestinationButton {
+            NewDestinationButton(
+                modifier = Modifier.padding(
+                    start = 14.dp,
+                    end = 14.dp,
+                    bottom = 10.dp
+                )
+            ) {
                 onSearch(query.value)
             }
 

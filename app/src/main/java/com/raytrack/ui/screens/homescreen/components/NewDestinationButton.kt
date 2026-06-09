@@ -21,12 +21,13 @@ import com.raytrack.ui.theme.RayTracColors
 
 @Composable
 fun NewDestinationButton(
+    modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
 
     Button(
         onClick = onClick,
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(55.dp),
         shape = RoundedCornerShape(12.dp),

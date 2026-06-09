@@ -20,23 +20,20 @@ import com.raytrack.ui.theme.RayTracColors
 
 @Composable
 fun SectionHeader(
+    modifier: Modifier = Modifier,
     title: String
 ) {
     Row(
-        modifier = Modifier.padding(
-            top = 20.dp,
-            bottom = 12.dp
-        ),
+        modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
     ) {
 
         Text(
             text = title,
+            modifier = Modifier.padding(end = 8.dp),
             color = RayTracColors.PrimaryGlow,
             fontSize = 14.sp
         )
-
-        Spacer(Modifier.width(8.dp))
 
         Box(
             modifier = Modifier

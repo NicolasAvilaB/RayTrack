@@ -46,7 +46,7 @@ fun StatusItem(
                             start = 4.dp),
                         text = title,
                         color = RayTracColors.TextSecondary,
-                        fontSize = 11.sp
+                        fontSize = 14.sp
                     )
 
                     Text(

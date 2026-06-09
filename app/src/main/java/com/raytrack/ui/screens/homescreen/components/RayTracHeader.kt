@@ -31,10 +31,10 @@ fun RayTracHeader() {
     ) {
 
         Text(
-            text = "R A Y T R A C",
+            text = "RAYTRAC",
             color = RayTracColors.TextPrimary,
             fontSize = 28.sp,
-            letterSpacing = 4.sp
+            letterSpacing = 16.sp
         )
 
         Box(
