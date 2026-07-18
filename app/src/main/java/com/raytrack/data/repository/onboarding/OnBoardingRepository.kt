@@ -1,8 +1,8 @@
-package com.raytrack.data.remote.onboarding
+package com.raytrack.data.repository.onboarding
 
 import kotlinx.coroutines.flow.Flow
 
-internal interface OnBoardingCacheDataSource {
+internal interface OnBoardingRepository {
 
     fun isOnBoardingViewed(): Flow<Boolean>
 
