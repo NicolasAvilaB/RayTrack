@@ -2,7 +2,7 @@ package com.raytrack.presentation.onboarding
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.raytrack.data.remote.onboarding.OnBoardingUseCase
+import com.raytrack.data.repository.onboarding.OnBoardingUseCase
 import com.raytrack.presentation.onboarding.OnBoardingUiState.DisplayUiState
 import com.raytrack.presentation.onboarding.OnBoardingUiState.ErrorUiState
 import com.raytrack.presentation.onboarding.OnBoardingUiState.LoadingUiState

@@ -1,7 +1,7 @@
 package com.raytrack.ui.navigation.extensions
 
 import androidx.lifecycle.ViewModel
-import com.raytrack.data.remote.onboarding.OnBoardingUseCase
+import com.raytrack.data.repository.onboarding.OnBoardingUseCase
 import com.raytrack.ui.navigation.NavRoutes
 import kotlinx.coroutines.flow.first
 
