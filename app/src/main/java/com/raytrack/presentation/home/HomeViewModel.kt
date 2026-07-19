@@ -11,12 +11,17 @@ import androidx.compose.material.icons.filled.Work
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.ViewModel
+import com.raytrack.data.localdb.entity.destination.DestinationEntity
 import com.raytrack.data.models.DestinationType
 import com.raytrack.data.repository.destination.usecase.DestinationCommandUseCase
 import com.raytrack.data.repository.destination.usecase.GetDestinationUseCase
 import com.raytrack.data.repository.destination.usecase.DestinationSearchUseCase
 import com.raytrack.ui.screens.homescreen.model.DestinationItem
 import com.raytrack.ui.screens.homescreen.model.SearchFilter
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 
 internal class HomeViewModel(
@@ -25,86 +30,50 @@ internal class HomeViewModel(
     private val commandDestUseCase: DestinationCommandUseCase
 ) : ViewModel() {
 
-    val query = mutableStateOf("")
-    val filter = mutableStateOf(SearchFilter.FAVORITES)
+    private val _query = MutableStateFlow("")
+    val query = _query.asStateFlow()
 
-    val favorites = listOf(
-        getDestUseCase.getFavorites().map {
-            it.forEach {
-                DestinationItem(
-                    title = it.title,
-                    subtitle = it.address,
-                    icon = it.icon.toIcon()
-                )
+    private val _filter = MutableStateFlow(SearchFilter.FAVORITES)
+    val filter = _filter.asStateFlow()
+
+    val favorites =
+        query.flatMapLatest { text ->
+            if (text.isBlank()) {
+                getDestUseCase.getFavorites()
+            } else {
+                searchDestUseCase.searchFavorites(text)
             }
+        }.map { list ->
+            list.map { it.toDestinationItem() }
         }
-    )
 
-    val recents = listOf(
-        getDestUseCase.getRecents().map {
-            it.forEach {
-                DestinationItem(
-                    title = it.title,
-                    subtitle = it.address,
-                    icon = it.icon.toIcon()
-                )
+    val recents =
+        query.flatMapLatest { text ->
+            if (text.isBlank()) {
+                getDestUseCase.getRecents()
+            } else {
+                searchDestUseCase.searchRecents(text)
             }
+        }.map { list ->
+            list.map { it.toDestinationItem() }
         }
-    )
 
-    fun filteredFavorites(): List<DestinationItem> =
-        if (filter.value == SearchFilter.FAVORITES)
-            searchFavorites(query.value)
-        else
-            favorites
-
-    fun filteredRecents(): List<DestinationItem> =
-        if (filter.value == SearchFilter.RECENTS)
-            searchRecents(query.value)
-        else
-            recents
-
-    fun searchFavorites(
-        query: String
-    ): List<DestinationItem> {
-
-        return favorites.filter {
-
-            query.isBlank() ||
-
-                    it.title.contains(
-                        query,
-                        ignoreCase = true
-                    ) ||
-
-                    it.subtitle.contains(
-                        query,
-                        ignoreCase = true
-                    )
-        }
+    fun onQueryChange(query: String) {
+        _query.value = query
     }
 
-    fun searchRecents(
-        query: String
-    ): List<DestinationItem> {
-
-        return recents.filter {
-
-            query.isBlank() ||
-
-                    it.title.contains(
-                        query,
-                        ignoreCase = true
-                    ) ||
-
-                    it.subtitle.contains(
-                        query,
-                        ignoreCase = true
-                    )
-        }
+    fun onFilterChange(filter: SearchFilter) {
+        _filter.value = filter
     }
 
-     fun DestinationType.toIcon(): ImageVector =
+    internal fun DestinationEntity.toDestinationItem() =
+        DestinationItem(
+            title = title,
+            subtitle = address,
+            icon = icon.toIcon()
+        )
+
+     internal fun DestinationType.toIcon(): ImageVector =
         when (this) {
             DestinationType.HOME -> Icons.Default.Home
             DestinationType.WORK -> Icons.Default.Work
@@ -112,6 +81,6 @@ internal class HomeViewModel(
             DestinationType.LANDSCAPE -> Icons.Default.Landscape
             DestinationType.BEACH -> Icons.Default.BeachAccess
             DestinationType.OTHER -> Icons.Default.Place
-            else -> {}
+            else -> Icons.Default.Place
         }
 }

@@ -1,6 +1,5 @@
 package com.raytrack.ui.screens.homescreen
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -11,12 +10,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.raytrack.presentation.home.HomeViewModel
 import com.raytrack.ui.screens.homescreen.components.FavoriteList
@@ -26,10 +25,8 @@ import com.raytrack.ui.screens.homescreen.components.RayTracHeader
 import com.raytrack.ui.screens.homescreen.components.RayTracRadar
 import com.raytrack.ui.screens.homescreen.components.RayTracSearchBar
 import com.raytrack.ui.screens.homescreen.components.RecentList
-import com.raytrack.ui.screens.homescreen.components.SectionHeader
 import com.raytrack.ui.screens.homescreen.components.StatusPanel
 import com.raytrack.ui.screens.homescreen.model.BatteryUtils
-import com.raytrack.ui.screens.homescreen.model.SearchFilter
 import com.raytrack.ui.theme.RayTracColors
 
 @Composable
@@ -44,6 +41,12 @@ internal fun HomeScreen(
     val batteryLevel = remember {
         BatteryUtils.getBatteryLevel(context)
     }
+
+    val query by viewModel.query.collectAsState()
+    val filter by viewModel.filter.collectAsState()
+
+    val favorites by viewModel.favorites.collectAsState(emptyList())
+    val recents by viewModel.recents.collectAsState(emptyList())
 
     Box(
         modifier = Modifier
@@ -70,23 +73,19 @@ internal fun HomeScreen(
             RayTracHeader()
 
             RayTracSearchBar(
-                query = viewModel.query.value,
-                filter = viewModel.filter.value,
-                onFilterChange = {
-                    viewModel.filter.value = it
-                },
-                onQueryChange = {
-                    viewModel.query.value = it
-                }
+                query = query,
+                filter = filter,
+                onQueryChange = viewModel::onQueryChange,
+                onFilterChange = viewModel::onFilterChange
             )
 
             FavoriteList(
-                favorites = viewModel.filteredFavorites(),
+                favorites = favorites,
                 onSelectRoute = onSelectRoute
             )
 
             RecentList(
-                recents = viewModel.filteredRecents(),
+                recents = recents,
                 onSelectRoute = onSelectRoute
             )
 
@@ -114,18 +113,4 @@ internal fun HomeScreen(
             )
         }
     }
-}
-
-@SuppressLint("ViewModelConstructorInComposable")
-@Preview(showBackground = true)
-@Composable
-fun HomeScreenPreview() {
-    HomeScreen(
-        onSearch = {
-        },
-        viewModel = HomeViewModel(),
-        onSelectRoute = {
-
-        },
-    )
 }
