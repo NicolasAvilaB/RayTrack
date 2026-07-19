@@ -8,6 +8,7 @@ import androidx.compose.material.icons.filled.Landscape
 import androidx.compose.material.icons.filled.Park
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.filled.Work
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.ViewModel
 import com.raytrack.data.models.DestinationType
@@ -15,6 +16,7 @@ import com.raytrack.data.repository.destination.usecase.DestinationCommandUseCas
 import com.raytrack.data.repository.destination.usecase.GetDestinationUseCase
 import com.raytrack.data.repository.destination.usecase.DestinationSearchUseCase
 import com.raytrack.ui.screens.homescreen.model.DestinationItem
+import com.raytrack.ui.screens.homescreen.model.SearchFilter
 import kotlinx.coroutines.flow.map
 
 internal class HomeViewModel(
@@ -22,6 +24,9 @@ internal class HomeViewModel(
     private val getDestUseCase: GetDestinationUseCase,
     private val commandDestUseCase: DestinationCommandUseCase
 ) : ViewModel() {
+
+    val query = mutableStateOf("")
+    val filter = mutableStateOf(SearchFilter.FAVORITES)
 
     val favorites = listOf(
         getDestUseCase.getFavorites().map {
@@ -46,6 +51,18 @@ internal class HomeViewModel(
             }
         }
     )
+
+    fun filteredFavorites(): List<DestinationItem> =
+        if (filter.value == SearchFilter.FAVORITES)
+            searchFavorites(query.value)
+        else
+            favorites
+
+    fun filteredRecents(): List<DestinationItem> =
+        if (filter.value == SearchFilter.RECENTS)
+            searchRecents(query.value)
+        else
+            recents
 
     fun searchFavorites(
         query: String

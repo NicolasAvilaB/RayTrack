@@ -58,7 +58,6 @@ internal fun RayTracSearchBar(
             value = query,
             onValueChange = onQueryChange,
             modifier = Modifier
-                .imePadding()
                 .fillMaxWidth()
                 .height(54.dp),
             placeholder = {

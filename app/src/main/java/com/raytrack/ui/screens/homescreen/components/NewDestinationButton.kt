@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Map
+import androidx.compose.material.icons.filled.MapsUgc
 import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -40,7 +42,7 @@ fun NewDestinationButton(
         )
     ) {
         Icon(
-            imageVector = Icons.Default.MyLocation,
+            imageVector = Icons.Default.Map,
             contentDescription = null,
             tint = RayTracColors.PrimaryGlow
         )
