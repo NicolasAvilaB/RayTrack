@@ -9,5 +9,7 @@ sealed class NavRoutes: NavKey {
     @Serializable
     data object HomeNav: NavRoutes()
     @Serializable
+    data object MapsNav: NavRoutes()
+    @Serializable
     data object ErrorNav: NavRoutes()
 }

@@ -31,7 +31,7 @@ import com.raytrack.ui.theme.RayTracColors
 
 @Composable
 internal fun HomeScreen(
-    onSearch: (String) -> Unit,
+    onNavToMaps: () -> Unit,
     viewModel: HomeViewModel,
     onSelectRoute: (String) -> Unit,
 ) {
@@ -103,10 +103,9 @@ internal fun HomeScreen(
                     start = 14.dp,
                     end = 14.dp,
                     bottom = 10.dp
-                )
-            ) {
-                onSearch(viewModel.query.value)
-            }
+                ),
+                onClick = onNavToMaps
+            )
 
             StatusPanel(
                 batteryLevel = batteryLevel

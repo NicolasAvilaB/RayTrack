@@ -16,6 +16,7 @@ import com.raytrack.data.repository.onboarding.OnBoardingRepository
 import com.raytrack.data.repository.onboarding.OnBoardingImpl
 import com.raytrack.data.repository.onboarding.OnBoardingUseCase
 import com.raytrack.presentation.home.HomeViewModel
+import com.raytrack.presentation.maps.MapsViewModel
 import com.raytrack.presentation.onboarding.OnBoardingViewModel
 import com.raytrack.ui.navigation.extensions.AppStartResolve
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -79,6 +80,10 @@ fun AppModule() = module {
     }
 
     viewModel {
-        HomeViewModel(get(), get() , get())
+        HomeViewModel(get(), get())
+    }
+
+    viewModel {
+        MapsViewModel(get())
     }
 }

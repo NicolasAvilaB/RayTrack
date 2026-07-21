@@ -26,8 +26,7 @@ import kotlinx.coroutines.flow.map
 
 internal class HomeViewModel(
     private val searchDestUseCase: DestinationSearchUseCase,
-    private val getDestUseCase: GetDestinationUseCase,
-    private val commandDestUseCase: DestinationCommandUseCase
+    private val getDestUseCase: GetDestinationUseCase
 ) : ViewModel() {
 
     private val _query = MutableStateFlow("")
