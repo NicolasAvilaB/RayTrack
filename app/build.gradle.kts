@@ -47,6 +47,9 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
 
+    implementation(libs.google.maps.compose)
+    implementation(libs.google.play.services.maps)
+
     //Added Dependency's
     implementation(libs.coil.compose)
 

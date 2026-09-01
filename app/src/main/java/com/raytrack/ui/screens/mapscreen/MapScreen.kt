@@ -14,6 +14,7 @@ import com.raytrack.ui.screens.homescreen.components.FuturisticBackground
 import com.raytrack.ui.screens.homescreen.components.RayTracHeader
 import com.raytrack.ui.screens.homescreen.components.RayTracSearchBar
 import com.raytrack.ui.screens.mapscreen.components.MapHeader
+import com.raytrack.ui.screens.mapscreen.components.RayTracMap
 import com.raytrack.ui.theme.RayTracColors
 
 @Composable
@@ -37,6 +38,10 @@ internal fun MapScreen(
 
             MapHeader(
                 onNavBack = onNavBack
+            )
+
+            RayTracMap(
+                modifier = Modifier.fillMaxSize()
             )
         }
     }
