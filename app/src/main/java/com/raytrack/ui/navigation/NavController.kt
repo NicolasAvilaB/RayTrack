@@ -20,6 +20,7 @@ import com.raytrack.ui.navigation.extensions.back
 import com.raytrack.ui.navigation.extensions.navigateAfterOnBoarding
 import com.raytrack.ui.navigation.extensions.navigateTo
 import com.raytrack.ui.screens.homescreen.HomeScreen
+import com.raytrack.ui.screens.mapscreen.MapScreen
 import com.raytrack.ui.screens.onboardingscreen.OnBoardingScreen
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -34,11 +35,11 @@ internal fun NavController(
 
     if (startDestination == null) return
 
-    val backStack = rememberNavBackStack(startDestination)
+    val navigationStack = rememberNavBackStack(startDestination)
 
     NavDisplay(
-        backStack = backStack,
-        onBack = { backStack.back() },
+        backStack = navigationStack,
+        onBack = { navigationStack.back() },
         entryProvider = entryProvider {
             entry<OnBoardingNav> {
 
@@ -48,7 +49,7 @@ internal fun NavController(
 
                 OnBoardingScreen(
                     navToHome = {
-                        backStack.navigateAfterOnBoarding(NavRoutes.HomeNav)
+                        navigationStack.navigateAfterOnBoarding(NavRoutes.HomeNav)
                     },
                     viewModel = viewModel,
                 )
@@ -62,7 +63,7 @@ internal fun NavController(
                 HomeScreen(
                     viewModel = viewModel,
                     onNavToMaps = {
-                        backStack.navigateTo(NavRoutes.MapsNav)
+                        navigationStack.navigateTo(NavRoutes.MapsNav)
                     },
                     onSelectRoute = {
 
@@ -75,8 +76,10 @@ internal fun NavController(
                     parametersOf()
                 }
 
-
-
+                MapScreen(
+                    onNavBack = { navigationStack.back() },
+                    onNavToAr = { navigationStack.navigateTo(NavRoutes.ArNav) }
+                )
             }
             entry<ErrorNav> {
                 Text("Error")

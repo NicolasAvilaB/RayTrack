@@ -55,7 +55,7 @@ fun MapHeader(
             }
             Column(
                 modifier = Modifier.padding(
-                    start = 5.dp,
+                    start = 8.dp,
                     top = 8.dp
                 )
             ) {
@@ -70,7 +70,7 @@ fun MapHeader(
                         top = 4.dp,
                         bottom = 12.dp
                     ),
-                    text = "ADQUIRIR COORDENADAS",
+                    text = "SELECCIONA TU DESTINO",
                     color = RayTracColors.PrimaryGlow,
                     fontSize = 10.sp
                 )

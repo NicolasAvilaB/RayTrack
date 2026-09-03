@@ -11,5 +11,7 @@ sealed class NavRoutes: NavKey {
     @Serializable
     data object MapsNav: NavRoutes()
     @Serializable
+    data object ArNav: NavRoutes()
+    @Serializable
     data object ErrorNav: NavRoutes()
 }
