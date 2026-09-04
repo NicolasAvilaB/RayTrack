@@ -47,7 +47,7 @@ fun DestinationCard(
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(18.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color(0xFF071521).copy(alpha = 0.5f)
+            containerColor = RayTracColors.DestinationCardDark.copy(alpha = 0.5f)
         ),
         border = BorderStroke(
             1.dp,

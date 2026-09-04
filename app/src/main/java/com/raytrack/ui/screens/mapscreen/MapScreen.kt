@@ -1,23 +1,21 @@
 package com.raytrack.ui.screens.mapscreen
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.raytrack.presentation.maps.MapsUiState
 import com.raytrack.presentation.maps.MapsViewModel
 import com.raytrack.ui.screens.homescreen.components.FuturisticBackground
 import com.raytrack.ui.screens.mapscreen.components.DestinationBottomPanel
@@ -26,19 +24,25 @@ import com.raytrack.ui.screens.mapscreen.components.MapSearchBar
 import com.raytrack.ui.screens.mapscreen.components.MapSearchResults
 import com.raytrack.ui.screens.mapscreen.components.RayTracMap
 import com.raytrack.ui.screens.mapscreen.model.MapSearchResult
+import com.raytrack.ui.screens.mapscreen.stateview.ErrorMapView
+import com.raytrack.ui.screens.mapscreen.stateview.LoadingMapView
 import com.raytrack.ui.theme.RayTracColors
 
 @Composable
 internal fun MapScreen(
     onNavBack: () -> Unit,
-    onNavToAr: () -> Unit
+    onNavToAr: () -> Unit,
+    viewModel: MapsViewModel = viewModel()
 ) {
 
-    var query by remember { mutableStateOf("") }
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    var destinationSelected by remember {
-        mutableStateOf(true)
-    }
+    val query = viewModel.inputQuery.value
+    val showSearchResults = viewModel.showSearchResults.value
+
+    val selectedPlace = viewModel.selectedPlace
+
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     Box(
         modifier = Modifier
@@ -56,21 +60,56 @@ internal fun MapScreen(
         ) {
 
             MapHeader(
-                onNavBack = onNavBack
+                onNavBack = {
+                    onNavBack.invoke()
+                }
             )
 
             MapSearchBar(
                 query = query,
-                onQueryChange = {
-                    query = it
-                }
+                showResults = showSearchResults,
+                onToggleResults = {
+                    viewModel.toggleSearchResults()
+                    viewModel.clearSelectedPlace()
+                    viewModel.clearQuery()
+                },
+                onQueryChange = viewModel::onQueryChange
             )
 
-            if (query.isNotBlank()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .padding(
+                        top = 8.dp,
+                        bottom = 8.dp
+                    )
+            ) {
 
-                Spacer(
-                    modifier = Modifier.height(8.dp)
+                RayTracMap(
+                    modifier = Modifier.fillMaxSize(),
+                    currentLocation = viewModel.currentLocation.value,
+                    onMapLoaded = viewModel::onMapLoaded
+
                 )
+
+                when (uiState) {
+
+                    is MapsUiState.LoadingUiState -> {
+                        LoadingMapView(
+                            visible = true
+                        )
+                    }
+
+                    is MapsUiState.DisplayUiState -> {
+                        LoadingMapView(
+                            visible = false
+                        )
+                    }
+                }
+
+                if (showSearchResults && query.isNotBlank()) {
+
                     val fakeResults = listOf(
                         MapSearchResult(
                             title = "Costanera Center",
@@ -91,32 +130,30 @@ internal fun MapScreen(
                             longitude = -70.6358
                         )
                     )
+
                     MapSearchResults(
+                        modifier = Modifier
+                            .fillMaxWidth(),
                         results = fakeResults,
-                        onResultClick = { }
+                        onResultClick = { result ->
+                            keyboardController?.hide()
+                            viewModel.selectPlace(result)
+                            viewModel.clearQuery()
+                        }
                     )
-
-            }
-
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-                    .padding(top = 8.dp, bottom = 8.dp)
-            ) {
-                RayTracMap(modifier = Modifier.fillMaxSize())
+                }
             }
 
             DestinationBottomPanel(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 5.dp),
-                title = "Costanera Center",
-                address = "Av. Andrés Bello 2425\nProvidencia, Santiago",
+                title = selectedPlace?.title.orEmpty(),
+                address = selectedPlace?.address.orEmpty(),
+                visible = selectedPlace != null,
                 isFavorite = false,
                 onToggleFavorite = {},
                 onStartAr = onNavToAr,
-                visible = destinationSelected
             )
         }
     }
@@ -126,5 +163,5 @@ internal fun MapScreen(
 @Preview
 @Composable
 fun MapScreenPreview() {
-    MapScreen(onNavBack = { }, onNavToAr = { })
+    MapScreen(onNavBack = { }, onNavToAr = { },)
 }

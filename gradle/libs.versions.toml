@@ -19,18 +19,20 @@ appcompat-version = "1.8.0"
 io-mockk-version = "1.14.11"
 espressoCore = "3.7.0"
 lifecycleRuntimeKtx = "2.10.0"
+lifecycleViewmodelNavigation3 = "2.11.0"
 activityCompose = "1.13.0"
 kotlin = "2.4.10"
 composeBom = "2026.08.00"
 maps-compose = "8.5.0"
 play-services-maps = "20.0.0"
+play-services-location = "21.3.0"
 secrets-gradle-plugin = "2.0.1"
 
 [libraries]
 
 google-maps-compose = { module = "com.google.maps.android:maps-compose", version.ref = "maps-compose" }
 google-play-services-maps = { module = "com.google.android.gms:play-services-maps", version.ref = "play-services-maps" }
-
+google-play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "play-services-location" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-fragment = { group = "androidx.fragment", name = "fragment-ktx", version.ref = "fragment-version" }
 
@@ -52,6 +54,7 @@ androidx-appcompat = { group = "androidx.appcompat", name="appcompat", version.r
 kotlin-test = { group = "org.jetbrains.kotlin", name="kotlin-test"}
 io-mockk = { group = "io.mockk", name="mockk", version.ref = "io-mockk-version" }
 retrofit = { group = "com.squareup.retrofit2", name="retrofit", version.ref = "retrofit-version" }
+androidx-lifecycle-viewmodel-navigation3 = { module = "androidx.lifecycle:lifecycle-viewmodel-navigation3", version.ref = "lifecycleViewmodelNavigation3" }
 navigation3-runtime = { group = "androidx.navigation3", name="navigation3-runtime", version.ref = "nav-compose-version" }
 navigation3-ui = { group = "androidx.navigation3", name="navigation3-ui", version.ref = "nav-compose-version" }
 

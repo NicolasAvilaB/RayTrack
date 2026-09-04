@@ -54,6 +54,7 @@ dependencies {
 
     implementation(libs.google.maps.compose)
     implementation(libs.google.play.services.maps)
+    implementation(libs.google.play.services.location)
 
     //Added Dependency's
     implementation(libs.coil.compose)
@@ -78,6 +79,7 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.navigation3.runtime)
     implementation(libs.navigation3.ui)
+    implementation(libs.androidx.lifecycle.viewmodel.navigation3)
     implementation(libs.navigation.animation)
     implementation(libs.retrofit.gson)
 

@@ -5,10 +5,12 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.material3.Text
+import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.produceState
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
+import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.raytrack.presentation.home.HomeViewModel
 import com.raytrack.presentation.maps.MapsViewModel
@@ -40,6 +42,10 @@ internal fun NavController(
     NavDisplay(
         backStack = navigationStack,
         onBack = { navigationStack.back() },
+        entryDecorators = listOf(
+            rememberSaveableStateHolderNavEntryDecorator(),
+            rememberViewModelStoreNavEntryDecorator()
+        ),
         entryProvider = entryProvider {
             entry<OnBoardingNav> {
 
@@ -77,8 +83,13 @@ internal fun NavController(
                 }
 
                 MapScreen(
-                    onNavBack = { navigationStack.back() },
-                    onNavToAr = { navigationStack.navigateTo(NavRoutes.ArNav) }
+                    viewModel = viewModel,
+                    onNavBack = {
+                        navigationStack.back()
+                    },
+                    onNavToAr = {
+                        navigationStack.navigateTo(NavRoutes.ArNav)
+                    },
                 )
             }
             entry<ErrorNav> {

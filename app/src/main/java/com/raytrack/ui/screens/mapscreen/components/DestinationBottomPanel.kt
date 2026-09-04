@@ -158,7 +158,7 @@ internal fun DestinationBottomPanel(
                         tint = if (isFavorite) {
                             RayTracColors.PrimaryGlow
                         } else {
-                            RayTracColors.TextSecondary
+                            RayTracColors.PrimaryWhite
                         }
                     )
                 }

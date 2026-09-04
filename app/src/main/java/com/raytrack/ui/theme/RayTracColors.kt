@@ -7,12 +7,14 @@ object RayTracColors {
     val Surface = Color(0xFF07111F)
 
     val PrimaryGlow = Color(0xFF00D1FF)
+    val PrimaryWhite = Color(0xFFF6FCFF)
     val SecondaryGlow = Color(0xFF5CF2FF)
     val Border = Color(0xFF00D1FF).copy(alpha = 0.18f)
     val TextPrimary = Color(0xFFEAF6FF)
     val TextSecondary = Color(0xFF7FA9C2)
-
     val TextThirdary = Color(0xFF003342)
+
+    val DestinationCardDark = Color(0xFF071521)
 
     // Glass
     val GlassDark = Color(0xFF07111F)

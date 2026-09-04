@@ -10,21 +10,21 @@ import com.google.android.gms.maps.model.CameraPosition
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.rememberCameraPositionState
+import com.raytrack.ui.screens.mapscreen.model.RayTracMapStyle
 
 @Composable
 internal fun RayTracMap(
-    modifier: Modifier
+    modifier: Modifier,
+    currentLocation: LatLng?,
+    onMapLoaded: () -> Unit
 ) {
-    val santiago = LatLng(
-        -33.4489,
-        -70.6693
-    )
-
     val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(
-            santiago,
-            13f
-        )
+        currentLocation?.let { location ->
+            position = CameraPosition.fromLatLngZoom(
+                location,
+                16f
+            )
+        }
     }
 
     GoogleMap(
@@ -34,7 +34,8 @@ internal fun RayTracMap(
         properties = MapProperties(
             isBuildingEnabled = true,
             isIndoorEnabled = false,
-            isTrafficEnabled = false
+            isTrafficEnabled = false,
+            mapStyleOptions = RayTracMapStyle()
         ),
 
         uiSettings = MapUiSettings(
@@ -46,12 +47,17 @@ internal fun RayTracMap(
             scrollGesturesEnabled = true,
             tiltGesturesEnabled = true,
             zoomGesturesEnabled = true
-        )
+        ),
+        onMapLoaded = onMapLoaded
     )
 }
 
 @Preview
 @Composable
 fun MapScreenPreview() {
-    RayTracMap(modifier = Modifier.fillMaxSize())
+    RayTracMap(
+        modifier = Modifier.fillMaxSize(),
+        currentLocation = LatLng(1.2,1.3),
+        onMapLoaded = { }
+    )
 }

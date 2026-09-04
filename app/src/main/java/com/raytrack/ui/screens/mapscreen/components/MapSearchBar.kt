@@ -1,12 +1,21 @@
 package com.raytrack.ui.screens.mapscreen.components
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ViewList
+import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Tune
+import androidx.compose.material.icons.filled.ViewList
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -23,7 +32,9 @@ import com.raytrack.ui.theme.RayTracColors
 @Composable
 internal fun MapSearchBar(
     query: String,
+    showResults: Boolean,
     onQueryChange: (String) -> Unit,
+    onToggleResults: () -> Unit,
 ) {
 
     OutlinedTextField(
@@ -47,6 +58,36 @@ internal fun MapSearchBar(
                 tint = RayTracColors.PrimaryGlow
             )
         },
+        trailingIcon = {
+            IconButton(
+                onClick = onToggleResults
+            ) {
+                AnimatedContent(
+                    targetState = showResults,
+                    transitionSpec = {
+                        (fadeIn() + scaleIn(initialScale = 0.7f))
+                            .togetherWith(
+                                fadeOut() + scaleOut(targetScale = 0.7f)
+                            )
+                    },
+                    label = "searchModeTransition"
+                ) { currentShowResults ->
+                    Icon(
+                        imageVector = if (currentShowResults) {
+                            Icons.AutoMirrored.Filled.ViewList
+                        } else {
+                            Icons.Default.Map
+                        },
+                        contentDescription = if (currentShowResults) {
+                            "Ocultar resultados"
+                        } else {
+                            "Mostrar resultados"
+                        },
+                        tint = RayTracColors.PrimaryGlow
+                    )
+                }
+            }
+        },
         shape = RoundedCornerShape(18.dp),
         textStyle = TextStyle(
             fontSize = 18.sp
@@ -69,5 +110,7 @@ private fun MapSearchBarPreview() {
     MapSearchBar(
         query = "",
         onQueryChange = {},
+        showResults = true,
+        onToggleResults = {}
     )
 }

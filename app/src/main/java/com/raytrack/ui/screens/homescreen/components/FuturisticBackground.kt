@@ -21,7 +21,6 @@ fun FuturisticBackground() {
             .background(RayTracColors.Background)
     ) {
 
-        // Glow superior
         Box(
             modifier = Modifier
                 .size(800.dp)
@@ -29,7 +28,7 @@ fun FuturisticBackground() {
                 .background(
                     Brush.radialGradient(
                         colors = listOf(
-                            RayTracColors.PrimaryGlow.copy(alpha = 0.10f),
+                            RayTracColors.PrimaryGlow.copy(alpha = 0.15f),
                             androidx.compose.ui.graphics.Color.Transparent
                         )
                     ),
@@ -37,7 +36,6 @@ fun FuturisticBackground() {
                 )
         )
 
-        // Glow central muy tenue
         Box(
             modifier = Modifier
                 .size(500.dp)
@@ -53,7 +51,6 @@ fun FuturisticBackground() {
                 )
         )
 
-        // Vignette inferior
         Box(
             modifier = Modifier
                 .fillMaxSize()
