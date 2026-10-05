@@ -27,10 +27,11 @@ import com.raytrack.ui.theme.RayTracColors
 
 @Composable
 fun MapHeader(
+    modifier: Modifier = Modifier,
     onNavBack: () -> Unit
 ) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(top = 10.dp),
         verticalAlignment = Alignment.CenterVertically

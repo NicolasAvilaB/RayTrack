@@ -29,7 +29,7 @@ import com.raytrack.ui.screens.homescreen.components.FuturisticBackground
 import com.raytrack.ui.theme.RayTracColors
 
 @Composable
-internal fun LoadingMapView(visible: Boolean) {
+internal fun LoadingMapView() {
     val infiniteTransition = rememberInfiniteTransition(
         label = "loading"
     )
@@ -75,7 +75,6 @@ internal fun LoadingMapView(visible: Boolean) {
 
         FuturisticBackground()
 
-        // Central pulsating glow
         Box(
             modifier = Modifier
                 .align(Alignment.Center)
@@ -97,7 +96,6 @@ internal fun LoadingMapView(visible: Boolean) {
                 )
         )
 
-        // Content
         Column(
             modifier = Modifier.align(Alignment.Center),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -126,5 +124,5 @@ internal fun LoadingMapView(visible: Boolean) {
 @Preview
 @Composable
 fun LoadingMapViewPreview() {
-    LoadingMapView(true)
+    LoadingMapView()
 }

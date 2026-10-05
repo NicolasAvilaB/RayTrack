@@ -56,6 +56,10 @@ dependencies {
     implementation(libs.google.play.services.maps)
     implementation(libs.google.play.services.location)
 
+    implementation(libs.maplibre.compose)
+
+    runtimeOnly(libs.maplibre.compose.runtime.opengl.android)
+
     //Added Dependency's
     implementation(libs.coil.compose)
 

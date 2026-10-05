@@ -6,12 +6,14 @@ import androidx.room.Room
 import com.raytrack.data.cache.OnBoardingDataStore
 import com.raytrack.data.cache.dataStore
 import com.raytrack.data.localdb.database.RayTracDatabase
+import com.raytrack.data.maps.LocationProvider
 import com.raytrack.data.models.Constants.RAYTRACK_DATABASE
 import com.raytrack.data.repository.destination.DestinationImpl
 import com.raytrack.data.repository.destination.DestinationRepository
 import com.raytrack.data.repository.destination.usecase.DestinationCommandUseCase
 import com.raytrack.data.repository.destination.usecase.GetDestinationUseCase
 import com.raytrack.data.repository.destination.usecase.DestinationSearchUseCase
+import com.raytrack.data.repository.maps.ObserveLocationUseCase
 import com.raytrack.data.repository.onboarding.OnBoardingRepository
 import com.raytrack.data.repository.onboarding.OnBoardingImpl
 import com.raytrack.data.repository.onboarding.OnBoardingUseCase
@@ -72,6 +74,14 @@ fun AppModule() = module {
     }
 
     single {
+        LocationProvider(androidContext())
+    }
+
+    factory {
+        ObserveLocationUseCase(get())
+    }
+
+    single {
         AppStartResolve(get())
     }
 
@@ -84,6 +94,6 @@ fun AppModule() = module {
     }
 
     viewModel {
-        MapsViewModel(get())
+        MapsViewModel(get(), get())
     }
 }

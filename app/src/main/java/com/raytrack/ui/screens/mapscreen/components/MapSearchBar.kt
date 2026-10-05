@@ -31,6 +31,7 @@ import com.raytrack.ui.theme.RayTracColors
 
 @Composable
 internal fun MapSearchBar(
+    modifier: Modifier = Modifier,
     query: String,
     showResults: Boolean,
     onQueryChange: (String) -> Unit,
@@ -40,7 +41,7 @@ internal fun MapSearchBar(
     OutlinedTextField(
         value = query,
         onValueChange = onQueryChange,
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(top = 8.dp)
             .height(54.dp),

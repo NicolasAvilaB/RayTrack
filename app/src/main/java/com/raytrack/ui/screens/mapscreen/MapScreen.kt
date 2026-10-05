@@ -1,20 +1,33 @@
 package com.raytrack.ui.screens.mapscreen
 
+import android.Manifest
+import android.content.pm.PackageManager
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.raytrack.data.maps.OfflineMapManager
 import com.raytrack.presentation.maps.MapsUiState
 import com.raytrack.presentation.maps.MapsViewModel
 import com.raytrack.ui.screens.homescreen.components.FuturisticBackground
@@ -27,6 +40,7 @@ import com.raytrack.ui.screens.mapscreen.model.MapSearchResult
 import com.raytrack.ui.screens.mapscreen.stateview.ErrorMapView
 import com.raytrack.ui.screens.mapscreen.stateview.LoadingMapView
 import com.raytrack.ui.theme.RayTracColors
+import kotlinx.coroutines.launch
 
 @Composable
 internal fun MapScreen(
@@ -34,6 +48,41 @@ internal fun MapScreen(
     onNavToAr: () -> Unit,
     viewModel: MapsViewModel = viewModel()
 ) {
+
+    val context = LocalContext.current
+
+    val hasLocationPermission =
+        ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+
+    val locationPermissionLauncher =
+        rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.RequestMultiplePermissions()
+        ) { permissions ->
+
+            val granted =
+                permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
+                        permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true
+
+            if (granted) {
+                viewModel.startLocationUpdates()
+            }
+        }
+
+    LaunchedEffect(hasLocationPermission) {
+        if (hasLocationPermission) {
+            viewModel.startLocationUpdates()
+        } else {
+            locationPermissionLauncher.launch(
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                )
+            )
+        }
+    }
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -75,6 +124,20 @@ internal fun MapScreen(
                 },
                 onQueryChange = viewModel::onQueryChange
             )
+            val scope = rememberCoroutineScope()
+            val offlineMapManager = remember {
+                OfflineMapManager()
+            }
+
+            Button(
+                onClick = {
+                    scope.launch {
+                        offlineMapManager.ensureTestRegion()
+                    }
+                }
+            ) {
+                Text("DOWNLOAD TEST MAP")
+            }
 
             Box(
                 modifier = Modifier
@@ -89,22 +152,20 @@ internal fun MapScreen(
                 RayTracMap(
                     modifier = Modifier.fillMaxSize(),
                     currentLocation = viewModel.currentLocation.value,
-                    onMapLoaded = viewModel::onMapLoaded
-
+                    onMapLoaded = viewModel::onMapLoaded,
+                    onMapError = viewModel::onMapError
                 )
 
                 when (uiState) {
 
                     is MapsUiState.LoadingUiState -> {
-                        LoadingMapView(
-                            visible = true
-                        )
+                        LoadingMapView()
                     }
 
-                    is MapsUiState.DisplayUiState -> {
-                        LoadingMapView(
-                            visible = false
-                        )
+                    is MapsUiState.DisplayUiState -> {}
+
+                    is MapsUiState.ErrorUiState -> {
+                        ErrorMapView()
                     }
                 }
 
