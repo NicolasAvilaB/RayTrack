@@ -6,16 +6,33 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MyLocation
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.raytrack.R
+import com.raytrack.presentation.maps.model.MapSearchResult
+import com.raytrack.ui.theme.RayTracColors
+import kotlinx.coroutines.launch
 import org.maplibre.compose.camera.CameraPosition
+import org.maplibre.compose.camera.CameraUpdate
 import org.maplibre.compose.expressions.dsl.const
 import org.maplibre.compose.expressions.dsl.image
 import org.maplibre.compose.layers.SymbolLayer
@@ -36,12 +53,15 @@ import org.maplibre.spatialk.geojson.Position
 internal fun RayTracMap(
     modifier: Modifier,
     currentLocation: Position?,
+    selectedPlace: MapSearchResult?,
     onMapLoaded: () -> Unit,
-    onMapError: () -> Unit
+    onMapError: () -> Unit,
 ) {
     if (currentLocation == null) return
 
     val context = LocalContext.current
+
+    val scope = rememberCoroutineScope()
 
     val styleJson = remember {
         context.resources
@@ -102,13 +122,11 @@ internal fun RayTracMap(
             iconImage = image(
                 painterResource(R.drawable.raytrac_location_core)
             ),
-            iconSize = const(1f),
+            iconSize = const(1.4f),
             iconAllowOverlap = const(true),
             iconIgnorePlacement = const(true)
         )
     }
-
-
 
     MaplibreMap(
         modifier = modifier,
@@ -118,7 +136,45 @@ internal fun RayTracMap(
         ) {
             renderMode = AndroidRenderMode.Texture
         }
-    )
+    ) {
+        if (selectedPlace == null) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(
+                        end = 20.dp,
+                        bottom = 20.dp
+                    )
+                    .size(56.dp)
+                    .border(
+                        1.dp,
+                        RayTracColors.Border,
+                        CircleShape
+                    )
+                    .background(
+                        RayTracColors.DestinationCardDark.copy(alpha = 0.75f),
+                        CircleShape
+                    )
+                    .clickable {
+                        scope.launch {
+                            mapState.animateCamera(
+                                CameraUpdate(
+                                    target = currentLocation,
+                                    zoom = 16.0
+                                )
+                            )
+                        }
+                    },
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.MyLocation,
+                    contentDescription = "Mi ubicación",
+                    tint = RayTracColors.PrimaryGlow
+                )
+            }
+        }
+    }
 
     LaunchedEffect(mapState.style.loadState) {
         when (mapState.style.loadState) {
@@ -134,8 +190,14 @@ internal fun RayTracMap(
 fun MapScreenPreview() {
     RayTracMap(
         modifier = Modifier.fillMaxSize(),
+        selectedPlace = MapSearchResult(
+             title = "",
+             address = "",
+             latitude = 1.0,
+             longitude = 1.0,
+        ),
         currentLocation = Position(1.0, 1.0),
         onMapLoaded = {},
-        onMapError = {}
+        onMapError = {},
     )
 }

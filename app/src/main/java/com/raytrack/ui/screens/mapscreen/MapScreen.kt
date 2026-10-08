@@ -10,8 +10,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -23,12 +21,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.raytrack.data.maps.OfflineMapManager
-import com.raytrack.presentation.maps.MapsUiState
+import com.raytrack.presentation.maps.MapsUiState.DisplayUiState
+import com.raytrack.presentation.maps.MapsUiState.ErrorUiState
+import com.raytrack.presentation.maps.MapsUiState.LoadingUiState
 import com.raytrack.presentation.maps.MapsViewModel
 import com.raytrack.ui.screens.homescreen.components.FuturisticBackground
 import com.raytrack.ui.screens.mapscreen.components.DestinationBottomPanel
@@ -36,11 +35,10 @@ import com.raytrack.ui.screens.mapscreen.components.MapHeader
 import com.raytrack.ui.screens.mapscreen.components.MapSearchBar
 import com.raytrack.ui.screens.mapscreen.components.MapSearchResults
 import com.raytrack.ui.screens.mapscreen.components.RayTracMap
-import com.raytrack.ui.screens.mapscreen.model.MapSearchResult
+import com.raytrack.presentation.maps.model.MapSearchResult
 import com.raytrack.ui.screens.mapscreen.stateview.ErrorMapView
 import com.raytrack.ui.screens.mapscreen.stateview.LoadingMapView
 import com.raytrack.ui.theme.RayTracColors
-import kotlinx.coroutines.launch
 
 @Composable
 internal fun MapScreen(
@@ -85,6 +83,7 @@ internal fun MapScreen(
     }
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val searchResults by viewModel.searchResults.collectAsStateWithLifecycle()
 
     val query = viewModel.inputQuery.value
     val showSearchResults = viewModel.showSearchResults.value
@@ -129,16 +128,6 @@ internal fun MapScreen(
                 OfflineMapManager()
             }
 
-            Button(
-                onClick = {
-                    scope.launch {
-                        offlineMapManager.ensureTestRegion()
-                    }
-                }
-            ) {
-                Text("DOWNLOAD TEST MAP")
-            }
-
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -152,50 +141,23 @@ internal fun MapScreen(
                 RayTracMap(
                     modifier = Modifier.fillMaxSize(),
                     currentLocation = viewModel.currentLocation.value,
+                    selectedPlace = selectedPlace,
                     onMapLoaded = viewModel::onMapLoaded,
                     onMapError = viewModel::onMapError
                 )
 
                 when (uiState) {
-
-                    is MapsUiState.LoadingUiState -> {
-                        LoadingMapView()
-                    }
-
-                    is MapsUiState.DisplayUiState -> {}
-
-                    is MapsUiState.ErrorUiState -> {
-                        ErrorMapView()
-                    }
+                    is LoadingUiState -> LoadingMapView()
+                    is DisplayUiState -> {}
+                    is ErrorUiState -> ErrorMapView()
                 }
 
                 if (showSearchResults && query.isNotBlank()) {
 
-                    val fakeResults = listOf(
-                        MapSearchResult(
-                            title = "Costanera Center",
-                            address = "Av. Andrés Bello 2425, Providencia",
-                            latitude = -33.4172,
-                            longitude = -70.6067
-                        ),
-                        MapSearchResult(
-                            title = "Parque Bicentenario",
-                            address = "Av. Bicentenario 3800, Vitacura",
-                            latitude = -33.3895,
-                            longitude = -70.5824
-                        ),
-                        MapSearchResult(
-                            title = "Cerro San Cristóbal",
-                            address = "Parque Metropolitano, Santiago",
-                            latitude = -33.4255,
-                            longitude = -70.6358
-                        )
-                    )
-
                     MapSearchResults(
                         modifier = Modifier
                             .fillMaxWidth(),
-                        results = fakeResults,
+                        results = searchResults,
                         onResultClick = { result ->
                             keyboardController?.hide()
                             viewModel.selectPlace(result)

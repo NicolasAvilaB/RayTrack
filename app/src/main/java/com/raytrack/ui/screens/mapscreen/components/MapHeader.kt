@@ -74,23 +74,6 @@ fun MapHeader(
                 fontSize = 12.sp
             )
         }
-
-        Box(
-            modifier = Modifier
-                .size(56.dp)
-                .border(
-                    1.dp,
-                    RayTracColors.Border,
-                    CircleShape
-                ),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = Icons.Default.MyLocation,
-                contentDescription = null,
-                tint = RayTracColors.PrimaryGlow
-            )
-        }
     }
 }
 

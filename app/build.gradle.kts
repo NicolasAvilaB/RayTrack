@@ -38,6 +38,7 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
     buildFeatures {
+        buildConfig = true
         compose = true
     }
 }
@@ -70,6 +71,7 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
+    implementation(libs.okhttp.logging.interceptor)
 
     implementation(libs.kotlinx.serialization.core)
 

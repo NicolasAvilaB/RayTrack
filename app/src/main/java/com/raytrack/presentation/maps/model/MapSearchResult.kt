@@ -1,4 +1,4 @@
-package com.raytrack.ui.screens.mapscreen.model
+package com.raytrack.presentation.maps.model
 
 internal data class MapSearchResult(
     val title: String,
