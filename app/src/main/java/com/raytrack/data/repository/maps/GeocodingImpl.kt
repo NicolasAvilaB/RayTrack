@@ -17,13 +17,13 @@ internal class GeocodingImpl(
 
         return api.search(query).map { remote ->
             MapSearchApiResult(
-                title = remote.displayName
-                    .substringBefore(","),
-                address = remote.displayName
-                    .substringAfter(",")
-                    .trim(),
-                latitude = remote.latitude,
-                longitude = remote.longitude
+                title = remote?.displayName
+                    ?.substringBefore(","),
+                address = remote?.displayName
+                    ?.substringAfter(",")
+                    ?.trim(),
+                latitude = remote?.latitude,
+                longitude = remote?.longitude
             )
         }
     }

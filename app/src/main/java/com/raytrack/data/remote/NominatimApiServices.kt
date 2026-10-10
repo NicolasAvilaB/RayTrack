@@ -12,5 +12,5 @@ internal interface NominatimApiServices {
         @Query("format") format: String = "jsonv2",
         @Query("limit") limit: Int = 3,
         @Query("countrycodes") countryCodes: String = "cl",
-    ): List<RemoteMapSearch>
+    ): List<RemoteMapSearch?>
 }

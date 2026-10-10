@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,21 +23,22 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.raytrack.data.maps.OfflineMapManager
-import com.raytrack.presentation.maps.MapsUiState.DisplayUiState
-import com.raytrack.presentation.maps.MapsUiState.ErrorUiState
-import com.raytrack.presentation.maps.MapsUiState.LoadingUiState
 import com.raytrack.presentation.maps.MapsViewModel
+import com.raytrack.presentation.maps.effects.DisplayUiEffects
+import com.raytrack.presentation.maps.events.MapsUiState.DisplayUiState
+import com.raytrack.presentation.maps.events.MapsUiState.ErrorUiState
+import com.raytrack.presentation.maps.events.MapsUiState.LoadingUiState
 import com.raytrack.ui.screens.homescreen.components.FuturisticBackground
 import com.raytrack.ui.screens.mapscreen.components.DestinationBottomPanel
 import com.raytrack.ui.screens.mapscreen.components.MapHeader
 import com.raytrack.ui.screens.mapscreen.components.MapSearchBar
 import com.raytrack.ui.screens.mapscreen.components.MapSearchResults
 import com.raytrack.ui.screens.mapscreen.components.RayTracMap
-import com.raytrack.presentation.maps.model.MapSearchResult
 import com.raytrack.ui.screens.mapscreen.stateview.ErrorMapView
 import com.raytrack.ui.screens.mapscreen.stateview.LoadingMapView
 import com.raytrack.ui.theme.RayTracColors
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 @Composable
 internal fun MapScreen(
@@ -48,6 +48,19 @@ internal fun MapScreen(
 ) {
 
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+
+    val uiState by viewModel.uiState().collectAsStateWithLifecycle()
+    val uiEffects = viewModel.uiEffect()
+
+    val query = viewModel.inputQuery.value
+    val showSearchResults = viewModel.showSearchResults.value
+
+    val searchResults by viewModel.searchResults.collectAsStateWithLifecycle()
+
+    val selectedPlace = viewModel.selectedPlace
+
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     val hasLocationPermission =
         ContextCompat.checkSelfPermission(
@@ -82,16 +95,6 @@ internal fun MapScreen(
         }
     }
 
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val searchResults by viewModel.searchResults.collectAsStateWithLifecycle()
-
-    val query = viewModel.inputQuery.value
-    val showSearchResults = viewModel.showSearchResults.value
-
-    val selectedPlace = viewModel.selectedPlace
-
-    val keyboardController = LocalSoftwareKeyboardController.current
-
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -121,12 +124,18 @@ internal fun MapScreen(
                     viewModel.clearSelectedPlace()
                     viewModel.clearQuery()
                 },
-                onQueryChange = viewModel::onQueryChange
+                onQueryChange = { text ->
+                    viewModel.inputQuery.value = text
+                    viewModel.updateSearchResults(emptyList())
+                },
+                onSearch = {
+                    viewModel.clearSelectedPlace()
+                    keyboardController?.hide()
+                    scope.launch {
+                        viewModel.searchListGlassResults(it).collect()
+                    }
+                }
             )
-            val scope = rememberCoroutineScope()
-            val offlineMapManager = remember {
-                OfflineMapManager()
-            }
 
             Box(
                 modifier = Modifier
@@ -152,19 +161,17 @@ internal fun MapScreen(
                     is ErrorUiState -> ErrorMapView()
                 }
 
-                if (showSearchResults && query.isNotBlank()) {
-
-                    MapSearchResults(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        results = searchResults,
-                        onResultClick = { result ->
-                            keyboardController?.hide()
-                            viewModel.selectPlace(result)
-                            viewModel.clearQuery()
-                        }
-                    )
-                }
+                MapSearchResults(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    results = searchResults,
+                    onResultClick = { result ->
+                        keyboardController?.hide()
+                        viewModel.selectPlace(result)
+                        viewModel.updateSearchResults(emptyList())
+                        viewModel.clearQuery()
+                    }
+                )
             }
 
             DestinationBottomPanel(
@@ -180,11 +187,15 @@ internal fun MapScreen(
             )
         }
     }
+    DisplayUiEffects(
+        uiEffects = uiEffects,
+        showResults = viewModel::updateSearchResults
+    )
 }
 
 
 @Preview
 @Composable
 fun MapScreenPreview() {
-    MapScreen(onNavBack = { }, onNavToAr = { },)
+    MapScreen(onNavBack = { }, onNavToAr = { })
 }

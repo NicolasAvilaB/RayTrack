@@ -1,14 +1,26 @@
 package com.raytrack.data.repository.maps
 
-import com.raytrack.data.models.MapSearchApiResult
+import com.raytrack.presentation.maps.model.MapSearchResult
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 internal class GeocodingSearchLocationUseCase(
     private val geocodingRepository: GeocodingRepository
 ) {
 
-    suspend operator fun invoke(
+    internal fun invoke(
         query: String
-    ): List<MapSearchApiResult> {
-        return geocodingRepository.search(query)
+    ): Flow<List<MapSearchResult>> = flow {
+        emit(
+            geocodingRepository.search(query)
+                .map { apiResults ->
+                    MapSearchResult(
+                        title = apiResults.title,
+                        address = apiResults.address,
+                        latitude = apiResults.latitude,
+                        longitude = apiResults.longitude
+                    )
+                }
+        )
     }
 }

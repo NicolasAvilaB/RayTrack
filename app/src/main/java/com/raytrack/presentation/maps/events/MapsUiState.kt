@@ -1,4 +1,4 @@
-package com.raytrack.presentation.maps
+package com.raytrack.presentation.maps.events
 
 internal sealed class MapsUiState {
     data object LoadingUiState : MapsUiState()

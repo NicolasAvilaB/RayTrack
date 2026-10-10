@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ViewList
 import androidx.compose.material.icons.filled.Map
@@ -24,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -35,12 +38,21 @@ internal fun MapSearchBar(
     query: String,
     showResults: Boolean,
     onQueryChange: (String) -> Unit,
+    onSearch: (String) -> Unit,
     onToggleResults: () -> Unit,
 ) {
 
     OutlinedTextField(
         value = query,
         onValueChange = onQueryChange,
+        keyboardOptions = KeyboardOptions(
+            imeAction = ImeAction.Search
+        ),
+        keyboardActions = KeyboardActions(
+            onSearch = {
+                onSearch(query)
+            }
+        ),
         modifier = modifier
             .fillMaxWidth()
             .padding(top = 8.dp)
@@ -112,6 +124,7 @@ private fun MapSearchBarPreview() {
         query = "",
         onQueryChange = {},
         showResults = true,
-        onToggleResults = {}
+        onToggleResults = {},
+        onSearch = {}
     )
 }

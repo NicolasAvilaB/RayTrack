@@ -17,6 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -51,6 +52,7 @@ internal fun MapSearchResultItem(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .clip(shape)
                 .background(
                     brush = Brush.linearGradient(
                         start = Offset(0f, 0f),
@@ -80,13 +82,13 @@ internal fun MapSearchResultItem(
                     .weight(1f)
             ) {
                 Text(
-                    text = result.title,
+                    text = result.title.toString(),
                     color = RayTracColors.TextPrimary,
                     fontSize = 18.sp
                 )
 
                 Text(
-                    text = result.address,
+                    text = result.address.toString(),
                     color = RayTracColors.TextSecondary,
                     fontSize = 14.sp
                 )
