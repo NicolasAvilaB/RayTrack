@@ -2,23 +2,33 @@ package com.raytrack.ui.screens.keyboardscreen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.waitForUpOrCancellation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Backspace
+import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -45,7 +55,11 @@ internal fun RayTracKeyboard(
     onSpace: () -> Unit,
     onSearch: () -> Unit
 ) {
-    if (!showKeyboard) return
+    val language = rememberSystemLanguage()
+    val useSystemKeyboard = language == "ja"
+
+    if (!showKeyboard || useSystemKeyboard) return
+
     var uppercase by remember { mutableStateOf(false) }
     var symbolsMode by remember { mutableStateOf(false) }
 
@@ -56,11 +70,7 @@ internal fun RayTracKeyboard(
             listOf("*", "\"", "'", ":", ";", "!", "?", ",", ".")
         )
     } else {
-        listOf(
-            listOf("Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"),
-            listOf("A", "S", "D", "F", "G", "H", "J", "K", "L", "Ñ"),
-            listOf("Z", "X", "C", "V", "B", "N", "M")
-        )
+        getKeyboardRows(language)
     }
 
     Column(
@@ -98,20 +108,21 @@ internal fun RayTracKeyboard(
                         letter.lowercase()
                     }
 
-                    KeyboardKey(
-                        label = character,
-                        modifier = Modifier.weight(1f),
-                        onClick = {
-                            onCharacter(character)
-                        }
-                    )
+                    key(symbolsMode, letter) {
+                        KeyboardKey(
+                            label = character,
+                            modifier = Modifier.weight(1f),
+                            onClick = {
+                                onCharacter(character)
+                            }
+                        )
+                    }
                 }
 
                 if (index == 2) {
-                    KeyboardKey(
-                        label = "⌫",
+                    BackspaceKey(
                         modifier = Modifier.weight(1.25f),
-                        onClick = onBackspace
+                        onBackspace = onBackspace
                     )
                 }
             }
@@ -154,12 +165,13 @@ private fun KeyboardKey(
     onClick: () -> Unit
 ) {
     var pressed by remember { mutableStateOf(false) }
+    val currentOnClick by rememberUpdatedState(onClick)
 
     val shape = RoundedCornerShape(9.dp)
 
     Box(
         modifier = modifier
-            .height(46.dp)
+            .height(50.dp)
             .clip(shape)
             .background(
                 if (pressed || highlighted) {
@@ -181,13 +193,16 @@ private fun KeyboardKey(
                 detectTapGestures(
                     onPress = {
                         pressed = true
+
                         val released = try {
                             tryAwaitRelease()
                         } finally {
                             pressed = false
                         }
 
-                        if (released) onClick()
+                        if (released) {
+                            currentOnClick()
+                        }
                     }
                 )
             }
@@ -222,7 +237,7 @@ private fun KeyboardKey(
                     Text(
                         text = label,
                         color = RayTracColors.SecondaryGlow,
-                        fontSize = 29.sp,
+                        fontSize = 30.sp,
                         fontWeight = FontWeight.SemiBold
                     )
                 }
@@ -236,11 +251,118 @@ private fun KeyboardKey(
             } else {
                 RayTracColors.TextPrimary
             },
-            fontSize = if (label == "Espacio") 12.sp else 17.sp,
+            fontSize = if (label == "Espacio") 14.sp else 17.sp,
             fontWeight = FontWeight.Medium,
             textAlign = TextAlign.Center,
             maxLines = 1
         )
+    }
+}
+
+@Composable
+private fun BackspaceKey(
+    modifier: Modifier = Modifier,
+    onBackspace: () -> Unit
+) {
+    var pressed by remember { mutableStateOf(false) }
+    val currentOnBackspace by rememberUpdatedState(onBackspace)
+
+    Box(
+        modifier = modifier
+            .height(50.dp)
+            .padding(horizontal = 2.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    color = if (pressed) {
+                        RayTracColors.GlassBlue
+                    } else {
+                        RayTracColors.Surface
+                    },
+                    shape = RoundedCornerShape(9.dp)
+                )
+                .border(
+                    width = 1.dp,
+                    color = RayTracColors.Border,
+                    shape = RoundedCornerShape(9.dp)
+                )
+                .pointerInput(Unit) {
+                    awaitEachGesture {
+                        awaitFirstDown(requireUnconsumed = false)
+                        pressed = true
+
+                        try {
+                            currentOnBackspace()
+
+                            var released = withTimeoutOrNull(300) {
+                                waitForUpOrCancellation()
+                            } != null
+
+                            if (!released) {
+                                while (true) {
+                                    currentOnBackspace()
+
+                                    released = withTimeoutOrNull(1) {
+                                        waitForUpOrCancellation()
+                                    } != null
+
+                                    if (released) break
+                                }
+                            }
+                        } finally {
+                            pressed = false
+                        }
+                    }
+                },
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.Backspace,
+                contentDescription = "Borrar",
+                tint = RayTracColors.TextPrimary
+            )
+        }
+
+        if (pressed) {
+            Popup(
+                alignment = Alignment.TopCenter,
+                offset = IntOffset(0, -160),
+                properties = PopupProperties(
+                    focusable = false,
+                    dismissOnBackPress = false,
+                    dismissOnClickOutside = false
+                )
+            ) {
+                Box(
+                    modifier = Modifier
+                        .padding(top = 4.dp)
+                        .border(
+                            1.5.dp,
+                            RayTracColors.PrimaryGlow.copy(alpha = 0.8f),
+                            RoundedCornerShape(12.dp)
+                        )
+                        .background(
+                            RayTracColors.GlassBlue.copy(alpha = 0.5f),
+                            RoundedCornerShape(12.dp)
+                        )
+                        .padding(
+                            horizontal = 16.dp,
+                            vertical = 10.dp
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.Backspace,
+                        contentDescription = "Borrar",
+                        tint = RayTracColors.SecondaryGlow,
+                        modifier = Modifier.size(30.dp)
+                    )
+                }
+            }
+        }
     }
 }
 

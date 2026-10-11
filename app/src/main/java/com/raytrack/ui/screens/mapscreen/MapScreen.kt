@@ -13,7 +13,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -29,6 +32,8 @@ import com.raytrack.presentation.maps.events.MapsUiState.DisplayUiState
 import com.raytrack.presentation.maps.events.MapsUiState.ErrorUiState
 import com.raytrack.presentation.maps.events.MapsUiState.LoadingUiState
 import com.raytrack.ui.screens.homescreen.components.FuturisticBackground
+import com.raytrack.ui.screens.keyboardscreen.RayTracKeyboard
+import com.raytrack.ui.screens.keyboardscreen.rememberSystemLanguage
 import com.raytrack.ui.screens.mapscreen.components.DestinationBottomPanel
 import com.raytrack.ui.screens.mapscreen.components.MapHeader
 import com.raytrack.ui.screens.mapscreen.components.MapSearchBar
@@ -46,12 +51,16 @@ internal fun MapScreen(
     onNavToAr: () -> Unit,
     viewModel: MapsViewModel = viewModel()
 ) {
+    val systemLanguage = rememberSystemLanguage()
+    val useSystemKeyboard = systemLanguage == "ja"
 
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
     val uiState by viewModel.uiState().collectAsStateWithLifecycle()
     val uiEffects = viewModel.uiEffect()
+
+    var showRayTracKeyboard by remember { mutableStateOf(false) }
 
     val query = viewModel.inputQuery.value
     val showSearchResults = viewModel.showSearchResults.value
@@ -119,16 +128,27 @@ internal fun MapScreen(
             MapSearchBar(
                 query = query,
                 showResults = showSearchResults,
+                useSystemKeyboard = useSystemKeyboard,
                 onToggleResults = {
+                    showRayTracKeyboard = false
+                    keyboardController?.hide()
                     viewModel.toggleSearchResults()
                     viewModel.clearSelectedPlace()
                     viewModel.clearQuery()
+                },
+                onKeyboardToggle = {
+                    showRayTracKeyboard = true
+                },
+                onKeyboardHide = {
+                    showRayTracKeyboard = false
+                    keyboardController?.hide()
                 },
                 onQueryChange = { text ->
                     viewModel.inputQuery.value = text
                     viewModel.updateSearchResults(emptyList())
                 },
                 onSearch = {
+                    showRayTracKeyboard = false
                     viewModel.clearSelectedPlace()
                     keyboardController?.hide()
                     scope.launch {
@@ -166,6 +186,7 @@ internal fun MapScreen(
                         .fillMaxWidth(),
                     results = searchResults,
                     onResultClick = { result ->
+                        showRayTracKeyboard = false
                         keyboardController?.hide()
                         viewModel.selectPlace(result)
                         viewModel.updateSearchResults(emptyList())
@@ -186,6 +207,41 @@ internal fun MapScreen(
                 onStartAr = onNavToAr,
             )
         }
+        if (showRayTracKeyboard && !useSystemKeyboard) {
+            RayTracKeyboard(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth(),
+                showKeyboard = true,
+                onCharacter = { character ->
+                    viewModel.inputQuery.value += character
+                    viewModel.updateSearchResults(emptyList())
+                },
+                onBackspace = {
+                    val currentQuery = viewModel.inputQuery.value
+                    if (currentQuery.isNotEmpty()) {
+                        viewModel.inputQuery.value = currentQuery.dropLast(1)
+                        viewModel.updateSearchResults(emptyList())
+                    }
+                },
+                onSpace = {
+                    viewModel.inputQuery.value += " "
+                    viewModel.updateSearchResults(emptyList())
+                },
+                onSearch = {
+                    showRayTracKeyboard = false
+                    keyboardController?.hide()
+                    viewModel.clearSelectedPlace()
+
+                    scope.launch {
+                        viewModel.searchListGlassResults(
+                            viewModel.inputQuery.value
+                        ).collect()
+                    }
+                }
+            )
+        }
+
     }
     DisplayUiEffects(
         uiEffects = uiEffects,

@@ -6,27 +6,30 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -39,9 +42,26 @@ import com.raytrack.ui.theme.RayTracColors
 internal fun RayTracSearchBar(
     query: String,
     filter: SearchFilter,
+    useSystemKeyboard: Boolean,
+    onKeyboardToggle: () -> Unit,
+    onKeyboardHide: () -> Unit,
     onQueryChange: (String) -> Unit,
     onFilterChange: (SearchFilter) -> Unit
 ) {
+
+    val interactionSource = remember {
+        MutableInteractionSource()
+    }
+
+    LaunchedEffect(interactionSource, useSystemKeyboard) {
+        if (!useSystemKeyboard) {
+            interactionSource.interactions.collect { interaction ->
+                if (interaction is PressInteraction.Press) {
+                    onKeyboardToggle()
+                }
+            }
+        }
+    }
 
     Column {
         Text(
@@ -57,9 +77,23 @@ internal fun RayTracSearchBar(
         OutlinedTextField(
             value = query,
             onValueChange = onQueryChange,
+            readOnly = !useSystemKeyboard,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(54.dp),
+                .height(54.dp)
+                .onFocusChanged { focusState ->
+                    if (!focusState.isFocused && !useSystemKeyboard) {
+                        onKeyboardHide()
+                    }
+                },
+            keyboardOptions = KeyboardOptions(
+                imeAction = ImeAction.Search
+            ),
+            keyboardActions = KeyboardActions(
+                onSearch = {
+                    onKeyboardHide()
+                }
+            ),
             placeholder = {
                 Text(
                     fontSize = 18.sp,
@@ -99,6 +133,7 @@ internal fun RayTracSearchBar(
                     }
                 }
             },
+            interactionSource = interactionSource,
             shape = RoundedCornerShape(18.dp),
             textStyle = TextStyle(
                 fontSize = 18.sp
@@ -126,6 +161,9 @@ fun RayTracSearchBarPreview() {
     RayTracSearchBar(
         query = "",
         filter = filter.value,
+        useSystemKeyboard = false,
+        onKeyboardToggle = {},
+        onKeyboardHide = {},
         onFilterChange = {
             filter.value = it
         },

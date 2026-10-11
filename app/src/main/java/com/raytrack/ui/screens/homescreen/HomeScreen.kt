@@ -12,10 +12,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import com.raytrack.presentation.home.HomeViewModel
 import com.raytrack.ui.screens.homescreen.components.FavoriteList
@@ -27,6 +30,8 @@ import com.raytrack.ui.screens.homescreen.components.RayTracSearchBar
 import com.raytrack.ui.screens.homescreen.components.RecentList
 import com.raytrack.ui.screens.homescreen.components.StatusPanel
 import com.raytrack.ui.screens.homescreen.model.BatteryUtils
+import com.raytrack.ui.screens.keyboardscreen.RayTracKeyboard
+import com.raytrack.ui.screens.keyboardscreen.rememberSystemLanguage
 import com.raytrack.ui.theme.RayTracColors
 
 @Composable
@@ -35,6 +40,12 @@ internal fun HomeScreen(
     viewModel: HomeViewModel,
     onSelectRoute: (String) -> Unit,
 ) {
+    val systemLanguage = rememberSystemLanguage()
+    val useSystemKeyboard = systemLanguage == "ja"
+
+    var showRayTracKeyboard by remember { mutableStateOf(false) }
+
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     val context = LocalContext.current
 
@@ -75,6 +86,14 @@ internal fun HomeScreen(
             RayTracSearchBar(
                 query = query,
                 filter = filter,
+                useSystemKeyboard = useSystemKeyboard,
+                onKeyboardToggle = {
+                    showRayTracKeyboard = true
+                },
+                onKeyboardHide = {
+                    showRayTracKeyboard = false
+                    keyboardController?.hide()
+                },
                 onQueryChange = viewModel::onQueryChange,
                 onFilterChange = viewModel::onFilterChange
             )
@@ -109,6 +128,29 @@ internal fun HomeScreen(
 
             StatusPanel(
                 batteryLevel = batteryLevel
+            )
+        }
+        if (showRayTracKeyboard && !useSystemKeyboard) {
+            RayTracKeyboard(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth(),
+                showKeyboard = showRayTracKeyboard,
+                onCharacter = { character ->
+                    viewModel.onQueryChange(query + character)
+                },
+                onBackspace = {
+                    if (query.isNotEmpty()) {
+                        viewModel.onQueryChange(query.dropLast(1))
+                    }
+                },
+                onSpace = {
+                    viewModel.onQueryChange(query + " ")
+                },
+                onSearch = {
+                    showRayTracKeyboard = false
+                    keyboardController?.hide()
+                }
             )
         }
     }
