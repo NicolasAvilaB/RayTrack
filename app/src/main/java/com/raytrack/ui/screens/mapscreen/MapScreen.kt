@@ -49,7 +49,7 @@ import kotlinx.coroutines.launch
 internal fun MapScreen(
     onNavBack: () -> Unit,
     onNavToAr: () -> Unit,
-    viewModel: MapsViewModel = viewModel()
+    viewModel: MapsViewModel = viewModel(),
 ) {
     val systemLanguage = rememberSystemLanguage()
     val useSystemKeyboard = systemLanguage == "ja"
@@ -110,7 +110,12 @@ internal fun MapScreen(
             .background(RayTracColors.Background)
     ) {
 
-        FuturisticBackground()
+        FuturisticBackground(
+            onHideKeyboard = {
+                showRayTracKeyboard = false
+                keyboardController?.hide()
+            }
+        )
 
         Column(
             modifier = Modifier

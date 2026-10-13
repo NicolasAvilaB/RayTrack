@@ -56,25 +56,9 @@ fun FavoriteList(
 @Preview
 @Composable
 fun FavoriteListPreview() {
-    val favorites = listOf(
-        DestinationItem(
-            "Casa",
-            "Los Leones 123",
-            Icons.Default.Home
-        ),
-        DestinationItem(
-            "Casa Perro",
-            "Los Leones 123",
-            Icons.Default.Home
-        ),
-        DestinationItem(
-            "Mirador",
-            "Farellones",
-            Icons.Default.Landscape
-        )
-    )
+    val favorites = listOf(null)
     FavoriteList(
-        favorites = favorites,
+        favorites = emptyList(),
         onSelectRoute = { }
     )
 }

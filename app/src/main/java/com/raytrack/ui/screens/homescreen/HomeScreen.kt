@@ -65,7 +65,12 @@ internal fun HomeScreen(
             .background(RayTracColors.Background)
     ) {
 
-        FuturisticBackground()
+        FuturisticBackground(
+            onHideKeyboard = {
+                showRayTracKeyboard = false
+                keyboardController?.hide()
+            }
+        )
 
         RayTracRadar(
             modifier = Modifier

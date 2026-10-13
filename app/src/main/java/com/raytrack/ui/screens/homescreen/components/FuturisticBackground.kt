@@ -1,6 +1,7 @@
 package com.raytrack.ui.screens.homescreen.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
@@ -13,10 +14,15 @@ import androidx.compose.ui.unit.dp
 import com.raytrack.ui.theme.RayTracColors
 
 @Composable
-fun FuturisticBackground() {
+fun FuturisticBackground(
+    onHideKeyboard: () -> Unit
+) {
 
     Box(
         modifier = Modifier
+            .clickable{
+                onHideKeyboard()
+            }
             .fillMaxSize()
             .background(RayTracColors.Background)
     ) {

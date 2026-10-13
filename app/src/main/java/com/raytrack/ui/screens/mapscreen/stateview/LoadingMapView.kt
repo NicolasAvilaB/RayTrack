@@ -1,10 +1,8 @@
 package com.raytrack.ui.screens.mapscreen.stateview
 
 import androidx.compose.animation.core.EaseInOut
-import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
@@ -25,7 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.raytrack.ui.screens.homescreen.components.FuturisticBackground
+import com.raytrack.ui.screens.mapscreen.components.FuturisticMapBackground
 import com.raytrack.ui.theme.RayTracColors
 
 @Composable
@@ -73,7 +71,7 @@ internal fun LoadingMapView() {
             )
     ) {
 
-        FuturisticBackground()
+        FuturisticMapBackground()
 
         Box(
             modifier = Modifier
