@@ -10,7 +10,7 @@ internal interface NominatimApiServices {
     suspend fun search(
         @Query("q") query: String,
         @Query("format") format: String = "jsonv2",
-        @Query("limit") limit: Int = 3,
+        @Query("limit") limit: Int = 10,
         @Query("countrycodes") countryCodes: String = "cl",
     ): List<RemoteMapSearch?>
 }

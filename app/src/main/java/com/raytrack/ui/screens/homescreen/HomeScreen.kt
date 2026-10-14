@@ -60,9 +60,7 @@ internal fun HomeScreen(
     val recents by viewModel.recents.collectAsState(emptyList())
 
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(RayTracColors.Background)
+        modifier = Modifier.fillMaxSize()
     ) {
 
         FuturisticBackground(
@@ -116,11 +114,11 @@ internal fun HomeScreen(
         }
 
         Column(
-                modifier = Modifier
-                    .padding(horizontal = 10.dp)
-                    .padding(bottom = 10.dp)
-                    .align(Alignment.BottomCenter),
-                verticalArrangement = Arrangement.spacedBy(5.dp)
+            modifier = Modifier
+                .padding(horizontal = 10.dp)
+                .padding(bottom = 10.dp)
+                .align(Alignment.BottomCenter),
+            verticalArrangement = Arrangement.spacedBy(5.dp)
         ) {
             NewDestinationButton(
                 modifier = Modifier.padding(

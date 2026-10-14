@@ -24,9 +24,9 @@ internal class LocationProvider(
 
         val request = LocationRequest.Builder(
             Priority.PRIORITY_HIGH_ACCURACY,
-            1_000L
+            3_500L
         )
-            .setMinUpdateIntervalMillis(500L)
+            .setMinUpdateIntervalMillis(3500L)
             .build()
 
         val callback = object : LocationCallback() {

@@ -11,6 +11,7 @@ import com.raytrack.presentation.maps.events.MapsUiEffects.ClearSearchResults
 import com.raytrack.presentation.maps.events.MapsUiEffects.ShowSearchResults
 import com.raytrack.presentation.maps.events.MapsUiState
 import com.raytrack.presentation.maps.model.MapSearchResult
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -20,9 +21,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.sample
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.maplibre.spatialk.geojson.Position
+import kotlin.time.Duration.Companion.milliseconds
 
 internal class MapsViewModel(
     private val commandDestUseCase: DestinationCommandUseCase,

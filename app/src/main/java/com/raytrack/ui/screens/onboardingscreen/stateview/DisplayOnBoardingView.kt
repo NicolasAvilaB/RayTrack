@@ -21,6 +21,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.raytrack.ui.screens.homescreen.components.FuturisticBackground
+import com.raytrack.ui.screens.onboardingscreen.components.FuturisticOnboardingBackground
+import com.raytrack.ui.theme.RayTracColors
 
 @Composable
 fun DisplayOnBoardingView(
@@ -36,37 +40,48 @@ fun DisplayOnBoardingView(
     val pagerState = rememberPagerState(pageCount = { pages.size })
     val isLastPage = pagerState.currentPage == pages.lastIndex
 
-    Column(
+    Box(
         modifier = Modifier.fillMaxSize()
     ) {
-        HorizontalPager(
-            state = pagerState,
-            modifier = Modifier.weight(1f)
-        ) { page ->
 
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(text = pages[page])
-            }
-        }
+        FuturisticOnboardingBackground()
 
-        AnimatedVisibility(
-            visible = isLastPage,
-            enter = fadeIn(),
-            exit = fadeOut()
+        Column(
+            modifier = Modifier.fillMaxSize()
         ) {
-            Button(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                onClick = {
-                    saveOnBoarding()
-                    navToHome()
+            HorizontalPager(
+                state = pagerState,
+                modifier = Modifier.weight(1f)
+            ) { page ->
+
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = pages[page],
+                        color = RayTracColors.PrimaryWhite,
+                        fontSize = 20.sp
+                    )
                 }
+            }
+
+            AnimatedVisibility(
+                visible = isLastPage,
+                enter = fadeIn(),
+                exit = fadeOut()
             ) {
-                Text("Entendido!")
+                Button(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    onClick = {
+                        saveOnBoarding()
+                        navToHome()
+                    }
+                ) {
+                    Text("Entendido!")
+                }
             }
         }
     }
@@ -74,7 +89,7 @@ fun DisplayOnBoardingView(
 
 @Preview(showBackground = true)
 @Composable
-fun DisplayOnBoardingPreview(){
+fun DisplayOnBoardingPreview() {
     DisplayOnBoardingView(
         navToHome = { },
         saveOnBoarding = { },

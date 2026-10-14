@@ -1,5 +1,6 @@
 package com.raytrack.ui.screens.keyboardscreen
 
+import android.view.HapticFeedbackConstants
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.awaitEachGesture
@@ -33,7 +34,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -70,12 +75,19 @@ internal fun RayTracKeyboard(
             listOf("*", "\"", "'", ":", ";", "!", "?", ",", ".")
         )
     } else {
-        getKeyboardRows(language)
+        getKeyboardLanguagesLettersRows(language)
     }
 
     Column(
         modifier = modifier
             .fillMaxWidth()
+            .pointerInput(Unit) {
+                awaitPointerEventScope {
+                    while (true) {
+                        awaitPointerEvent()
+                    }
+                }
+            }
             .clip(RoundedCornerShape(topStart = 22.dp, topEnd = 22.dp))
             .background(RayTracColors.Surface.copy(alpha = 0.7f))
             .border(
@@ -171,7 +183,7 @@ private fun KeyboardKey(
 
     Box(
         modifier = modifier
-            .height(50.dp)
+            .height(60.dp)
             .clip(shape)
             .background(
                 if (pressed || highlighted) {
@@ -269,7 +281,7 @@ private fun BackspaceKey(
 
     Box(
         modifier = modifier
-            .height(50.dp)
+            .height(60.dp)
             .padding(horizontal = 2.dp),
         contentAlignment = Alignment.Center
     ) {

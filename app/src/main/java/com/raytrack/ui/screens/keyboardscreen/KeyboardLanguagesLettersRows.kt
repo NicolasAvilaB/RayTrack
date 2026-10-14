@@ -1,6 +1,6 @@
 package com.raytrack.ui.screens.keyboardscreen
 
-internal fun getKeyboardRows(language: String): List<List<String>> {
+internal fun getKeyboardLanguagesLettersRows(language: String): List<List<String>> {
     return when (language) {
         "es" -> listOf(
             listOf("Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"),

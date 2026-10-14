@@ -19,9 +19,6 @@ fun FuturisticMapBackground() {
 
     Box(
         modifier = Modifier
-            .clickable{
-
-            }
             .fillMaxSize()
             .background(RayTracColors.Background)
     ) {
