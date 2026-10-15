@@ -11,4 +11,17 @@ object RayTrackDimensions {
     internal val KeyShape = RoundedCornerShape(
         9.dp
     )
+
+    internal val PanelShape = RoundedCornerShape(
+        24.dp
+    )
+    internal val ButtonShape = RoundedCornerShape(
+        14.dp
+    )
+
+    internal val SearchBarShape = RoundedCornerShape(
+        18.dp
+    )
+
+    internal val SearchBarTopPadding = 8.dp
 }

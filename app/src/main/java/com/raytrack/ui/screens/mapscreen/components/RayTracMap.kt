@@ -169,7 +169,7 @@ internal fun RayTracMap(
             ) {
                 Icon(
                     imageVector = Icons.Default.MyLocation,
-                    contentDescription = "Mi ubicación",
+                    contentDescription = "Mi ubicación actual",
                     tint = RayTracColors.PrimaryGlow
                 )
             }

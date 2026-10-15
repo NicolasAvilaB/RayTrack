@@ -1,11 +1,9 @@
 package com.raytrack.ui.screens.mapscreen.components
 
-import android.graphics.Color
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
@@ -16,11 +14,8 @@ import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.raytrack.presentation.maps.model.MapSearchResult
-import com.raytrack.ui.theme.RayTracColors
 import com.raytrack.ui.theme.RayTracColors.Background
-import kotlin.collections.take
 
 @Composable
 internal fun MapSearchResults(
@@ -28,29 +23,28 @@ internal fun MapSearchResults(
     onResultClick: (MapSearchResult) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    LazyColumn (
-        modifier = modifier.height(230.dp)
-        .graphicsLayer {
-        compositingStrategy = CompositingStrategy.Offscreen
-    }
-        .drawWithContent {
-            drawContent()
-
-            drawRect(
-                brush = Brush.verticalGradient(
-                    0f to Background,
-                    0.85f to Background,
-                    1f to Transparent
-                ),
-                blendMode = BlendMode.DstIn
-            )
-        },
+    LazyColumn(
+        modifier = modifier
+            .height(230.dp)
+            .graphicsLayer {
+                compositingStrategy = CompositingStrategy.Offscreen
+            }
+            .drawWithContent {
+                drawContent()
+                drawRect(
+                    brush = Brush.verticalGradient(
+                        0f to Background,
+                        0.85f to Background,
+                        1f to Transparent
+                    ),
+                    blendMode = BlendMode.DstIn
+                )
+            },
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-
-        items(results) { result ->
+        itemsIndexed(results) { index, result ->
             MapSearchResultItem(
-                index = results.indexOf(result) + 1,
+                index = index + 1,
                 result = result,
                 onClick = {
                     onResultClick(result)
@@ -78,12 +72,6 @@ fun MapSearchResultsPreview() {
         ),
         MapSearchResult(
             title = "Cerro San Cristóbal",
-            address = "Parque Metropolitano, Santiago",
-            latitude = -33.4255,
-            longitude = -70.6358
-        ),
-        MapSearchResult(
-            title = "Cerro Sjan Cristóbal",
             address = "Parque Metropolitano, Santiago",
             latitude = -33.4255,
             longitude = -70.6358

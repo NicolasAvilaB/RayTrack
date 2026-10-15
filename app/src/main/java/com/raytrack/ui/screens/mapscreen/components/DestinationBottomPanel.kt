@@ -30,6 +30,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -38,6 +39,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.raytrack.ui.theme.RayTracColors
+import com.raytrack.ui.theme.RayTrackDimensions.ButtonShape
+import com.raytrack.ui.theme.RayTrackDimensions.PanelShape
 
 @Composable
 internal fun DestinationBottomPanel(
@@ -48,41 +51,27 @@ internal fun DestinationBottomPanel(
     onToggleFavorite: () -> Unit,
     onStartAr: () -> Unit,
     modifier: Modifier = Modifier,
+    onSaveClick: () -> Unit = {},
 ) {
     AnimatedVisibility(
         visible = visible,
         modifier = modifier,
         enter = slideInVertically(
             initialOffsetY = { it },
-            animationSpec = spring(
-                dampingRatio = 0.75f,
-                stiffness = 350f
-            )
+            animationSpec = spring(dampingRatio = 0.75f, stiffness = 350f)
         ) + scaleIn(
             initialScale = 0.92f,
-            animationSpec = spring(
-                dampingRatio = 0.70f,
-                stiffness = 400f
-            )
+            animationSpec = spring(dampingRatio = 0.70f, stiffness = 400f)
         )
     ) {
         Column(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxWidth()
-                .border(
-                    border = BorderStroke(
-                        width = 1.dp,
-                        color = RayTracColors.Border
-                    ),
-                    shape = RoundedCornerShape(24.dp)
-                )
-                .shadow(
-                    elevation = 12.dp,
-                    shape = RoundedCornerShape(24.dp)
-                )
+                .shadow(elevation = 12.dp, shape = PanelShape)
+                .background(color = RayTracColors.Border.copy(alpha = 0.05f), shape = PanelShape)
+                .border(border = BorderStroke(width = 1.dp, color = RayTracColors.Border), shape = PanelShape)
                 .padding(18.dp)
         ) {
-
             Text(
                 modifier = Modifier.padding(bottom = 20.dp),
                 text = "DESTINO SELECCIONADO",
@@ -95,16 +84,12 @@ internal fun DestinationBottomPanel(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-
                 Box(
                     modifier = Modifier
                         .size(54.dp)
                         .align(Alignment.Top)
                         .border(
-                            border = BorderStroke(
-                                width = 1.dp,
-                                color = RayTracColors.PrimaryGlow
-                            ),
+                            border = BorderStroke(width = 1.dp, color = RayTracColors.PrimaryGlow),
                             shape = CircleShape
                         ),
                     contentAlignment = Alignment.Center
@@ -144,10 +129,7 @@ internal fun DestinationBottomPanel(
                         .size(48.dp)
                         .align(Alignment.Top)
                         .border(
-                            border = BorderStroke(
-                                width = 1.dp,
-                                color = RayTracColors.Border
-                            ),
+                            border = BorderStroke(width = 1.dp, color = RayTracColors.Border),
                             shape = RoundedCornerShape(18.dp)
                         )
                 ) {
@@ -155,11 +137,7 @@ internal fun DestinationBottomPanel(
                         imageVector = Icons.Default.Star,
                         contentDescription = null,
                         modifier = Modifier.size(24.dp),
-                        tint = if (isFavorite) {
-                            RayTracColors.PrimaryGlow
-                        } else {
-                            RayTracColors.PrimaryWhite
-                        }
+                        tint = if (isFavorite) RayTracColors.PrimaryGlow else RayTracColors.PrimaryWhite
                     )
                 }
             }
@@ -167,12 +145,8 @@ internal fun DestinationBottomPanel(
             HorizontalDivider(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(
-                        bottom = 24.dp
-                    )
-                    .padding(
-                        horizontal = 2.dp
-                    ),
+                    .padding(bottom = 24.dp)
+                    .padding(horizontal = 2.dp),
                 thickness = 1.dp,
                 color = RayTracColors.Border
             )
@@ -183,33 +157,26 @@ internal fun DestinationBottomPanel(
                     .height(52.dp),
                 horizontalArrangement = Arrangement.spacedBy(20.dp)
             ) {
-
+                // Botón Guardar
                 Button(
                     modifier = Modifier
                         .weight(1f)
-                        .height(82.dp)
+                        .fillMaxWidth()
                         .border(
-                            border = BorderStroke(
-                                width = 1.dp,
-                                color = RayTracColors.Border
-                            ),
-                            shape = RoundedCornerShape(14.dp)
+                            border = BorderStroke(width = 1.dp, color = RayTracColors.Border),
+                            shape = ButtonShape
                         ),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Transparent
-                    ),
-                    onClick = { }
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+                    shape = ButtonShape,
+                    onClick = onSaveClick
                 ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
                             imageVector = Icons.Default.Star,
                             contentDescription = null,
                             modifier = Modifier.size(24.dp),
                             tint = RayTracColors.PrimaryGlow
                         )
-
                         Text(
                             modifier = Modifier.padding(start = 7.dp),
                             text = "GUARDAR",
@@ -220,35 +187,29 @@ internal fun DestinationBottomPanel(
                     }
                 }
 
+                // Botón Iniciar AR
                 Button(
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxWidth()
-                        .height(76.dp)
+                        .clip(ButtonShape)
                         .background(
                             brush = Brush.horizontalGradient(
-                                colors = listOf(
-                                    Color(0xFF00AFCB),
-                                    Color(0xFF18DFFF)
-                                )
+                                colors = listOf(Color(0xFF00AFCB), Color(0xFF18DFFF))
                             ),
-                            shape = RoundedCornerShape(14.dp)
+                            shape = ButtonShape
                         ),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Transparent
-                    ),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+                    shape = ButtonShape,
                     onClick = onStartAr
                 ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
                             imageVector = Icons.Default.PlayArrow,
                             contentDescription = null,
                             modifier = Modifier.size(32.dp),
                             tint = RayTracColors.TextThirdary
                         )
-
                         Text(
                             modifier = Modifier.padding(start = 7.dp),
                             text = "INICIAR AR",
@@ -257,7 +218,6 @@ internal fun DestinationBottomPanel(
                             fontSize = 16.sp,
                             letterSpacing = 1.sp
                         )
-
                     }
                 }
             }
@@ -270,7 +230,6 @@ internal fun DestinationBottomPanel(
 fun DestinationBottomPanelPreview() {
     DestinationBottomPanel(
         visible = true,
-        modifier = Modifier,
         title = "Costanera Center",
         address = "Av. Andrés Bello 2425\nProvidencia, Santiago",
         isFavorite = false,

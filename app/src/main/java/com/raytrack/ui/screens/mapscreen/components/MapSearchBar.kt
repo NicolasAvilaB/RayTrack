@@ -6,11 +6,9 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -19,7 +17,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ViewList
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -36,10 +33,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.raytrack.ui.theme.RayTracColors
+import com.raytrack.ui.theme.RayTrackDimensions.SearchBarShape
+import com.raytrack.ui.theme.RayTrackDimensions.SearchBarTopPadding
 
 @Composable
 internal fun MapSearchBar(
-    modifier: Modifier = Modifier,
     query: String,
     showResults: Boolean,
     useSystemKeyboard: Boolean,
@@ -48,10 +46,9 @@ internal fun MapSearchBar(
     onQueryChange: (String) -> Unit,
     onSearch: (String) -> Unit,
     onToggleResults: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    val interactionSource = remember {
-        MutableInteractionSource()
-    }
+    val interactionSource = remember { MutableInteractionSource() }
 
     LaunchedEffect(interactionSource, useSystemKeyboard) {
         if (!useSystemKeyboard) {
@@ -66,73 +63,56 @@ internal fun MapSearchBar(
     OutlinedTextField(
         value = query,
         onValueChange = onQueryChange,
-        readOnly = !useSystemKeyboard,
-        keyboardOptions = KeyboardOptions(
-            imeAction = ImeAction.Search
-        ),
-        keyboardActions = KeyboardActions(
-            onSearch = {
-                onSearch(query)
-            }
-        ),
         modifier = modifier
             .fillMaxWidth()
-            .padding(top = 8.dp)
-            .height(54.dp)
+            .padding(top = SearchBarTopPadding)
             .onFocusChanged { focusState ->
                 if (!focusState.isFocused && !useSystemKeyboard) {
                     onKeyboardHide()
                 }
             },
+        readOnly = !useSystemKeyboard,
+        singleLine = true,
+        textStyle = TextStyle(fontSize = 18.sp),
         placeholder = {
             Text(
-                fontSize = 18.sp,
                 text = "Buscar lugares",
+                fontSize = 18.sp,
                 color = RayTracColors.TextSecondary
             )
         },
         leadingIcon = {
             Icon(
                 imageVector = Icons.Default.Search,
-                contentDescription = null,
+                contentDescription = "Buscar",
                 tint = RayTracColors.PrimaryGlow
             )
         },
         trailingIcon = {
-            IconButton(
-                onClick = onToggleResults
-            ) {
+            IconButton(onClick = onToggleResults) {
                 AnimatedContent(
                     targetState = showResults,
                     transitionSpec = {
                         (fadeIn() + scaleIn(initialScale = 0.7f))
-                            .togetherWith(
-                                fadeOut() + scaleOut(targetScale = 0.7f)
-                            )
+                            .togetherWith(fadeOut() + scaleOut(targetScale = 0.7f))
                     },
                     label = "searchModeTransition"
                 ) { currentShowResults ->
+                    val icon = if (currentShowResults) Icons.AutoMirrored.Filled.ViewList else Icons.Default.Map
+                    val description = if (currentShowResults) "Ocultar resultados" else "Mostrar resultados"
+
                     Icon(
-                        imageVector = if (currentShowResults) {
-                            Icons.AutoMirrored.Filled.ViewList
-                        } else {
-                            Icons.Default.Map
-                        },
-                        contentDescription = if (currentShowResults) {
-                            "Ocultar resultados"
-                        } else {
-                            "Mostrar resultados"
-                        },
+                        imageVector = icon,
+                        contentDescription = description,
                         tint = RayTracColors.PrimaryGlow
                     )
                 }
             }
         },
-        shape = RoundedCornerShape(18.dp),
-        textStyle = TextStyle(
-            fontSize = 18.sp
-        ),
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+        keyboardActions = KeyboardActions(onSearch = { onSearch(query) }),
         interactionSource = interactionSource,
+        shape = SearchBarShape,
         colors = OutlinedTextFieldDefaults.colors(
             focusedBorderColor = RayTracColors.PrimaryGlow,
             unfocusedBorderColor = RayTracColors.Border,
@@ -140,8 +120,7 @@ internal fun MapSearchBar(
             unfocusedContainerColor = RayTracColors.Surface,
             focusedTextColor = RayTracColors.TextPrimary,
             unfocusedTextColor = RayTracColors.TextPrimary
-        ),
-        singleLine = true
+        )
     )
 }
 
@@ -156,6 +135,6 @@ private fun MapSearchBarPreview() {
         onKeyboardToggle = {},
         onQueryChange = {},
         onSearch = {},
-        onToggleResults = {},
+        onToggleResults = {}
     )
 }

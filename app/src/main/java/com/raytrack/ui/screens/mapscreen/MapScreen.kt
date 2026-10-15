@@ -4,6 +4,9 @@ import android.Manifest
 import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -51,45 +54,39 @@ internal fun MapScreen(
     onNavToAr: () -> Unit,
     viewModel: MapsViewModel = viewModel(),
 ) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val keyboardController = LocalSoftwareKeyboardController.current
+
     val systemLanguage = rememberSystemLanguage()
     val useSystemKeyboard = systemLanguage == "ja"
 
-    val context = LocalContext.current
-    val scope = rememberCoroutineScope()
-
     val uiState by viewModel.uiState().collectAsStateWithLifecycle()
-    val uiEffects = viewModel.uiEffect()
-
-    var showRayTracKeyboard by remember { mutableStateOf(false) }
-
-    val query = viewModel.inputQuery.value
-    val showSearchResults = viewModel.showSearchResults.value
-
     val searchResults by viewModel.searchResults.collectAsStateWithLifecycle()
-
+    val currentLocation by viewModel.currentLocation
     val selectedPlace = viewModel.selectedPlace
 
-    val keyboardController = LocalSoftwareKeyboardController.current
+    var showRayTracKeyboard by remember { mutableStateOf(false) }
+    var query by viewModel.inputQuery
+    val showSearchResults by viewModel.showSearchResults
 
-    val hasLocationPermission =
+    val hasLocationPermission = remember(context) {
         ContextCompat.checkSelfPermission(
             context,
             Manifest.permission.ACCESS_FINE_LOCATION
         ) == PackageManager.PERMISSION_GRANTED
+    }
 
-    val locationPermissionLauncher =
-        rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.RequestMultiplePermissions()
-        ) { permissions ->
+    val locationPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        val granted = permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
+                permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true
 
-            val granted =
-                permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
-                        permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true
-
-            if (granted) {
-                viewModel.startLocationUpdates()
-            }
+        if (granted) {
+            viewModel.startLocationUpdates()
         }
+    }
 
     LaunchedEffect(hasLocationPermission) {
         if (hasLocationPermission) {
@@ -109,7 +106,6 @@ internal fun MapScreen(
             .fillMaxSize()
             .background(RayTracColors.Background)
     ) {
-
         FuturisticBackground(
             onHideKeyboard = {
                 showRayTracKeyboard = false
@@ -123,12 +119,7 @@ internal fun MapScreen(
                 .align(Alignment.TopCenter)
                 .padding(horizontal = 10.dp)
         ) {
-
-            MapHeader(
-                onNavBack = {
-                    onNavBack.invoke()
-                }
-            )
+            MapHeader(onNavBack = onNavBack)
 
             MapSearchBar(
                 query = query,
@@ -140,6 +131,7 @@ internal fun MapScreen(
                     viewModel.toggleSearchResults()
                     viewModel.clearSelectedPlace()
                     viewModel.clearQuery()
+                    viewModel.updateSearchResults(emptyList())
                 },
                 onKeyboardToggle = {
                     showRayTracKeyboard = true
@@ -149,15 +141,19 @@ internal fun MapScreen(
                     keyboardController?.hide()
                 },
                 onQueryChange = { text ->
-                    viewModel.inputQuery.value = text
-                    viewModel.updateSearchResults(emptyList())
+                    query = text
+                    if (showSearchResults) {
+                        viewModel.updateSearchResults(emptyList())
+                    }
                 },
-                onSearch = {
+                onSearch = { searchQuery ->
                     showRayTracKeyboard = false
                     viewModel.clearSelectedPlace()
                     keyboardController?.hide()
-                    scope.launch {
-                        viewModel.searchListGlassResults(it).collect()
+                    if (showSearchResults) {
+                        scope.launch {
+                            viewModel.searchListGlassResults(searchQuery).collect()
+                        }
                     }
                 }
             )
@@ -166,15 +162,11 @@ internal fun MapScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
-                    .padding(
-                        top = 8.dp,
-                        bottom = 8.dp
-                    )
+                    .padding(vertical = 8.dp)
             ) {
-
                 RayTracMap(
                     modifier = Modifier.fillMaxSize(),
-                    currentLocation = viewModel.currentLocation.value,
+                    currentLocation = currentLocation,
                     selectedPlace = selectedPlace,
                     onMapLoaded = viewModel::onMapLoaded,
                     onMapError = viewModel::onMapError
@@ -186,18 +178,21 @@ internal fun MapScreen(
                     is ErrorUiState -> ErrorMapView()
                 }
 
-                MapSearchResults(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    results = searchResults,
-                    onResultClick = { result ->
-                        showRayTracKeyboard = false
-                        keyboardController?.hide()
-                        viewModel.selectPlace(result)
-                        viewModel.updateSearchResults(emptyList())
-                        viewModel.clearQuery()
-                    }
-                )
+                if (showSearchResults && searchResults.isNotEmpty()) {
+                    MapSearchResults(
+                        modifier = Modifier.fillMaxWidth(),
+                        results = searchResults,
+                        onResultClick = { result ->
+                            if (result.latitude != 0.0){
+                                showRayTracKeyboard = false
+                                keyboardController?.hide()
+                                viewModel.selectPlace(result)
+                                viewModel.updateSearchResults(emptyList())
+                                viewModel.clearQuery()
+                            }
+                        }
+                    )
+                }
             }
 
             DestinationBottomPanel(
@@ -212,6 +207,7 @@ internal fun MapScreen(
                 onStartAr = onNavToAr,
             )
         }
+
         if (showRayTracKeyboard && !useSystemKeyboard) {
             RayTracKeyboard(
                 modifier = Modifier
@@ -219,44 +215,42 @@ internal fun MapScreen(
                     .fillMaxWidth(),
                 showKeyboard = true,
                 onCharacter = { character ->
-                    viewModel.inputQuery.value += character
+                    query += character
                     viewModel.updateSearchResults(emptyList())
                 },
                 onBackspace = {
-                    val currentQuery = viewModel.inputQuery.value
-                    if (currentQuery.isNotEmpty()) {
-                        viewModel.inputQuery.value = currentQuery.dropLast(1)
+                    if (query.isNotEmpty()) {
+                        query = query.dropLast(1)
                         viewModel.updateSearchResults(emptyList())
                     }
                 },
                 onSpace = {
-                    viewModel.inputQuery.value += " "
+                    query += " "
                     viewModel.updateSearchResults(emptyList())
                 },
                 onSearch = {
-                    showRayTracKeyboard = false
-                    keyboardController?.hide()
-                    viewModel.clearSelectedPlace()
+                        showRayTracKeyboard = false
+                        keyboardController?.hide()
+                        viewModel.clearSelectedPlace()
+                    if (showSearchResults) {
 
-                    scope.launch {
-                        viewModel.searchListGlassResults(
-                            viewModel.inputQuery.value
-                        ).collect()
+                        scope.launch {
+                            viewModel.searchListGlassResults(query).collect()
+                        }
                     }
                 }
             )
         }
-
     }
+
     DisplayUiEffects(
-        uiEffects = uiEffects,
+        uiEffects = viewModel.uiEffect(),
         showResults = viewModel::updateSearchResults
     )
 }
 
-
 @Preview
 @Composable
 fun MapScreenPreview() {
-    MapScreen(onNavBack = { }, onNavToAr = { })
+    MapScreen(onNavBack = {}, onNavToAr = {})
 }
